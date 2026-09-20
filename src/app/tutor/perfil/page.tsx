@@ -4,7 +4,10 @@ import { useRouter } from "next/navigation";
 
 export default function PerfilTutorPage() {
   const router = useRouter();
-  function handleLogout() {
+  async function handleLogout() {
+    const { createClient } = await import('@/lib/supabase/client');
+    const supabase = createClient();
+    await supabase.auth.signOut();
     localStorage.removeItem("saat_role");
     router.push("/login");
   }
@@ -44,3 +47,4 @@ export default function PerfilTutorPage() {
     </div>
   );
 }
+
