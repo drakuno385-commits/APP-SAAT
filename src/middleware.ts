@@ -1,10 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-// Rotas públicas (não precisam de login)
 const PUBLIC_ROUTES = ["/login", "/cadastro"];
 
-// Rotas por role
 const ROLE_ROUTES: Record<string, string> = {
   aluno: "/aluno/dashboard",
   tutor: "/tutor/painel",
@@ -35,21 +33,32 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const isPublic = PUBLIC_ROUTES.some((r) => pathname.startsWith(r));
 
-  // Não autenticado → redireciona para login
+  // Nao autenticado acessando rota privada -> redireciona para login
   if (!user && !isPublic && pathname !== "/") {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Autenticado acessando login → redireciona para dashboard do role
-  if (user && isPublic) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
+  // Verifica as rotas se estiver logado
+  if (user) {
+    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+    const role = profile?.role ?? "aluno";
+    const dest = ROLE_ROUTES[role];
 
-    const dest = ROLE_ROUTES[profile?.role ?? "aluno"];
-    return NextResponse.redirect(new URL(dest, request.url));
+    // Se tentar acessar pagina de login, joga pro painel correto
+    if (isPublic) {
+      return NextResponse.redirect(new URL(dest, request.url));
+    }
+
+    // TRAVA DE SEGURANCA: So entra na sua area!
+    if (role === "aluno" && !pathname.startsWith("/aluno")) {
+      return NextResponse.redirect(new URL(dest, request.url));
+    }
+    if (role === "tutor" && !pathname.startsWith("/tutor")) {
+      return NextResponse.redirect(new URL(dest, request.url));
+    }
+    if (role === "gestor" && !pathname.startsWith("/gestor")) {
+      return NextResponse.redirect(new URL(dest, request.url));
+    }
   }
 
   return supabaseResponse;
