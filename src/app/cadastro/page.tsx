@@ -90,7 +90,13 @@ export default function CadastroPage() {
         tipo_trabalho: form.trabalha ? form.tipoTrabalho : null,
         trabalho_entrada: form.trabalha ? form.horarioEntrada : null,
         trabalho_saida: form.trabalha ? form.horarioSaida : null,
-      });
+        });
+
+        if (errAluno) {
+          setError("ERRO NO BANCO (Mande isso para mim): " + errAluno.message);
+          setLoading(false);
+          return;
+        }
       router.push("/aluno/dashboard");
       router.refresh();
     } else if (perfil === "tutor") {
