@@ -24,17 +24,13 @@ export default function TutorPage() {
     const { data: { user } } = await supabase.auth.getUser();
     
     if (user) {
-      // 1. Sempre carrega a lista de tutores primeiro para garantir que a tela nao fique vazia
+      // 1. Sempre carrega a lista de tutores primeiro
       const { data: lista } = await supabase.from("profiles").select("id, nome").eq("role", "tutor");
       setTutoresDisponiveis(lista || []);
 
       // 2. Tenta carregar o aluno
       const { data: alunoInfo, error: errAluno } = await supabase.from("alunos").select("id, tutor_id, tutor_status").eq("user_id", user.id).single();
       
-      if (errAluno) {
-        console.error("Erro ao buscar aluno na tabela alunos:", errAluno);
-      }
-
       if (alunoInfo) {
         setAlunoId(alunoInfo.id);
         setTutorStatus(alunoInfo.tutor_status || null);
@@ -42,6 +38,8 @@ export default function TutorPage() {
         if (alunoInfo.tutor_id) {
           const { data: tutorInfo } = await supabase.from("profiles").select("id, nome").eq("id", alunoInfo.tutor_id).single();
           setMeuTutor(tutorInfo);
+        } else {
+          setMeuTutor(null);
         }
       }
     }
@@ -50,15 +48,26 @@ export default function TutorPage() {
 
   async function solicitarTutor(tutorId: string) {
     if (!alunoId) {
-      alert("Erro: Seu cadastro de aluno não foi completado corretamente no banco de dados. Crie uma nova conta de aluno.");
+      alert("Erro: Seu cadastro de aluno não foi completado corretamente. Crie uma nova conta.");
       return;
     }
     setLoading(true);
     const supabase = createClient();
-    await supabase.from("alunos").update({ 
-      tutor_id: tutorId, 
-      tutor_status: "pendente" 
-    }).eq("id", alunoId);
+    
+    // Se tutorId for vazio, significa que o aluno cancelou a solicitacao
+    if (tutorId === "") {
+      const { error } = await supabase.from("alunos").update({ 
+        tutor_id: null, 
+        tutor_status: null 
+      }).eq("id", alunoId);
+      if (error) alert("Erro ao cancelar: " + error.message);
+    } else {
+      const { error } = await supabase.from("alunos").update({ 
+        tutor_id: tutorId, 
+        tutor_status: "pendente" 
+      }).eq("id", alunoId);
+      if (error) alert("Erro ao solicitar tutor: " + error.message);
+    }
     
     carregarDados();
   }
@@ -71,7 +80,7 @@ export default function TutorPage() {
 
   if (loading) return <div className="p-8 text-center text-slate-500 font-bold">Carregando...</div>;
 
-  if (!meuTutor) {
+  if (!meuTutor || tutorStatus === null) {
     return (
       <div className="app-shell min-h-screen bg-slate-50">
         <header className="flex items-center px-4 py-4 border-b border-slate-200 bg-white">
@@ -84,7 +93,7 @@ export default function TutorPage() {
         <div className="p-4 flex flex-col gap-4">
           <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 text-center">
             <UserPlus size={32} className="text-blue-500 mx-auto mb-2" />
-            <h2 className="font-bold text-blue-800">Vocêê ainda não tem um tutor!</h2>
+            <h2 className="font-bold text-blue-800">Você ainda não tem um tutor!</h2>
             <p className="text-sm text-blue-600 mt-1">Selecione um professor abaixo para te orientar. O professor precisará aprovar sua solicitação.</p>
           </div>
 
@@ -108,7 +117,7 @@ export default function TutorPage() {
                     onClick={() => solicitarTutor(t.id)}
                     className="bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-full hover:bg-indigo-700 transition"
                   >
-                    Sãolicitar
+                    Solicitar
                   </button>
                 </div>
               ))
@@ -133,9 +142,9 @@ export default function TutorPage() {
           <div className="w-20 h-20 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center mb-4">
             <Clock size={40} />
           </div>
-          <h2 className="text-xl font-bold text-slate-800 text-center">Sãolicitação Enviada!</h2>
+          <h2 className="text-xl font-bold text-slate-800 text-center">Solicitação Enviada!</h2>
           <p className="text-slate-600 text-center mt-2 px-4">
-            Vocêê solicitou orientação do <strong className="text-slate-800">Prof. {meuTutor.nome}</strong>. 
+            Você solicitou orientação do <strong className="text-slate-800">Prof. {meuTutor.nome}</strong>. 
             Aguarde o professor aprovar o seu pedido no painel dele.
           </p>
           
