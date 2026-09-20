@@ -12,7 +12,7 @@ export const mockEscola: Escola = {
 };
 
 export const mockAluno: Aluno = {
-  id: "", user_id: "", escola_id: "", matricula: "", turma: "", trabalha: false,
+  id: "", user_id: "", escola_id: "", ra: "", turma: "", trabalha: false,
   profile: { id: "", role: "aluno", nome: "Carregando..." },
   escola: mockEscola,
   situacao: "normal", faltas_total: 0, atividades_pendentes: 0, media: 0,
