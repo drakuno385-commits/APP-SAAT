@@ -27,3 +27,8 @@ export const mockTutor = {
 };
 export const mockAlunosTutor: Aluno[] = [];
 export const mockMensagens: Mensagem[] = [];
+export function getFaltasPorMateria(faltas: Falta[]) {
+  const map: Record<string, number> = {};
+  for(const f of faltas) { map[f.materia] = (map[f.materia] || 0) + 1; }
+  return Object.keys(map).map(k => ({ materia: k, faltas: map[k], limite: 5 }));
+}
