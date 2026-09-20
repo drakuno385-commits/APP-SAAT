@@ -185,7 +185,7 @@ export default function CadastroPage() {
                 </div>
 
                 <div className="flex flex-col gap-2 mt-2">
-                  <label className="text-sm font-semibold text-slate-700">VocÃª trabalha atualmente?</label>
+                  <label className="text-sm font-semibold text-slate-700">VocêÃª trabalha atualmente?</label>
                   <div className="flex gap-3">
                     {[true, false].map((val) => (
                       <button key={String(val)} type="button" onClick={() => setForm({ ...form, trabalha: val })}
