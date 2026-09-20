@@ -9,7 +9,7 @@ export default function PerfilTutorPage() {
     const supabase = createClient();
     await supabase.auth.signOut();
     localStorage.removeItem("saat_role");
-    router.push("/login");
+    window.location.href = "/login";
   }
 
   return (
