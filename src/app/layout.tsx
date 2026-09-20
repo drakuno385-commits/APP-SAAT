@@ -1,9 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Geist } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const InterSans = Inter({
+  variable: "--font-Inter-sans",
   subsets: ["latin"],
 });
 
@@ -22,7 +22,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={`${geistSans.variable} h-full`}>
+    <html lang="pt-BR" className={`${InterSans.variable} h-full`}>
       <body className="min-h-full bg-slate-200 md:bg-slate-200">
         {children}
       </body>
