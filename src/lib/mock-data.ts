@@ -2,7 +2,7 @@ import { Aluno, Escola, Falta, Atividade, Mensagem, Tutor } from "./types";
 
 export const mockEscola: Escola = {
   id: "escola-1",
-  nome: "EE Prof. Eurípedes Simões de Paula",
+  nome: "EE Prof. Eurï¿½pedes Simï¿½es de Paula",
   endereco: "Rua das Flores, 123 - SÃ£o Paulo, SP",
   lat: -23.5505,
   lng: -46.6333,

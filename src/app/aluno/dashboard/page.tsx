@@ -4,7 +4,22 @@ import { Bell, Calendar, BookOpen, TrendingUp, User, AlertTriangle, CheckCircle,
 import { mockAluno, mockTutor } from "@/lib/mock-data";
 import { PresencaPopup } from "@/components/presenca/PresencaPopup";
 
+import { useState, useEffect } from 'react';
+import { createClient } from '@/lib/supabase/client';
+
 export default function DashboardPage() {
+  const [nome, setNome] = useState('Aluno');
+  useEffect(() => {
+    async function load() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if(user) {
+        const { data: p } = await supabase.from('profiles').select('nome').eq('id', user.id).single();
+        if(p) setNome(p.nome.split(' ')[0]);
+      }
+    }
+    load();
+  }, []);
   const aluno = mockAluno;
   const tutor = mockTutor;
 
@@ -47,7 +62,7 @@ export default function DashboardPage() {
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-white text-2xl font-bold">
-              Olá, {aluno.profile?.nome.split(" ")[0]}! 👋
+              Ol�, {nome}! 👋
             </h1>
             <p className="text-blue-200 text-sm mt-1">Seu acompanhamento</p>
           </div>
@@ -166,3 +181,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+

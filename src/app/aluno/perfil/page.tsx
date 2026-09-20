@@ -2,7 +2,23 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { useState, useEffect } from 'react';
+import { createClient } from '@/lib/supabase/client';
+
 export default function PerfilAlunoPage() {
+  const [userProfile, setUserProfile] = useState({ nome: 'Aluno', ra: '---', letra: 'A' });
+  useEffect(() => {
+    async function load() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if(user) {
+        const { data: p } = await supabase.from('profiles').select('nome').eq('id', user.id).single();
+        const { data: a } = await supabase.from('alunos').select('matricula').eq('user_id', user.id).single();
+        if(p) setUserProfile({ nome: p.nome, ra: a?.matricula || '---', letra: p.nome.charAt(0).toUpperCase() });
+      }
+    }
+    load();
+  }, []);
   const router = useRouter();
 
   async function handleLogout() {
@@ -27,7 +43,7 @@ export default function PerfilAlunoPage() {
           </div>
           <div className="text-center">
             <p className="font-bold text-slate-800 text-lg">João da Silva</p>
-            <p className="text-slate-500 text-sm">RA: 2024020123</p>
+            <p className="text-slate-500 text-sm">RA: {userProfile.ra}</p>
             <p className="text-slate-500 text-sm">2º Ano A — EE Professora Maria Aparecida</p>
           </div>
         </div>
@@ -79,4 +95,6 @@ export default function PerfilAlunoPage() {
     </div>
   );
 }
+
+
 
