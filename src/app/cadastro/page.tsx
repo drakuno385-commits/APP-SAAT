@@ -1,14 +1,14 @@
-﻿"use client";
+"use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
-const TURMAS = ["1Âº Ano A", "1Âº Ano B", "1Âº Ano C", "1Âº Ano D", "1Âº Ano E", "2Âº TA", "2Âº TB", "2Âº TC", "2Âº TD", "2Âº TE", "3Âº TA", "3Âº TB", "3Âº TC", "3Âº TD", "3Âº TE"];
+const TURMAS = ["1º Ano A", "1º Ano B", "1º Ano C", "1º Ano D", "1º Ano E", "2º TA", "2º TB", "2º TC", "2º TD", "2º TE", "3º TA", "3º TB", "3º TC", "3º TD", "3º TE"];
 const DIAS = [
   { key: "seg", label: "Seg" }, { key: "ter", label: "Ter" },
   { key: "qua", label: "Qua" }, { key: "qui", label: "Qui" },
-  { key: "sex", label: "Sex" }, { key: "sab", label: "SÃ¡b" },
+  { key: "sex", label: "Sex" }, { key: "sab", label: "Sáb" },
   { key: "dom", label: "Dom" },
 ];
 
