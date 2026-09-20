@@ -1,6 +1,7 @@
 ﻿import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { SessionGuard } from "@/components/SessionGuard";
 
 const InterSans = Inter({
   variable: "--font-Inter-sans",

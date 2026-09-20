@@ -20,7 +20,7 @@ export default function TutorDashboardPage() {
         const { data: alunosData } = await supabase
           .from("alunos")
           .select("*, profiles(nome)")
-          .eq("tutor_id", user.id);
+          .eq("tutor_id", user.id).eq("tutor_status", "aprovado");
         
         if (alunosData) setAlunos(alunosData);
       }

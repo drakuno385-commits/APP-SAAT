@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -27,7 +27,8 @@ export default function LoginPage() {
       return;
     }
 
-    // Busca o role do usuário gravado no próprio token (seguro e sem delay de DB)
+    // Busca o role do usuÃ¡rio gravado no prÃ³prio token (seguro e sem delay de DB)
+    sessionStorage.setItem("saat_session_active", "true");
     const role = data.user.user_metadata?.role || "aluno";
     const dest = role === "tutor" ? "/tutor/painel" : role === "gestor" ? "/gestor/relatorios" : "/aluno/dashboard";
     
@@ -40,7 +41,7 @@ export default function LoginPage() {
       <div className="flex-1 flex flex-col items-center justify-center px-6 pt-16 pb-8">
         <div className="flex flex-col items-center gap-3 mb-10">
           <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center shadow-xl">
-            <span className="text-4xl">🎓</span>
+            <span className="text-4xl">ðŸŽ“</span>
           </div>
           <h1 className="text-3xl font-black text-white tracking-tight">SAAT</h1>
           <p className="text-blue-200 text-sm font-medium">Sistema de Acompanhamento</p>
@@ -68,7 +69,7 @@ export default function LoginPage() {
                 type="password" 
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
-                placeholder="••••••••"
+                placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                 required
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               />
@@ -91,7 +92,7 @@ export default function LoginPage() {
 
           <div className="mt-6 pt-6 border-t border-slate-100 text-center">
             <p className="text-slate-500 text-sm">
-              Ainda não tem conta? <br/>
+              Ainda nÃ£o tem conta? <br/>
               <button 
                 onClick={() => router.push("/cadastro")}
                 className="text-blue-600 font-bold mt-1 hover:underline"

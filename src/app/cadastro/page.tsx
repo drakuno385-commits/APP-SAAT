@@ -70,6 +70,7 @@ export default function CadastroPage() {
       return;
     }
 
+    sessionStorage.setItem("saat_session_active", "true");
     const userId = authData.user.id;
 
     // 2. Cria profile com o role correto
