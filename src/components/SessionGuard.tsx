@@ -1,27 +1,40 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export function SessionGuard() {
   const pathname = usePathname();
+  const [isValidating, setIsValidating] = useState(true);
 
   useEffect(() => {
-    // Rotas públicas que não precisam de verificação de aba
-    if (pathname === "/login" || pathname === "/cadastro" || pathname === "/") return;
+    const isPublic = pathname === "/login" || pathname === "/cadastro" || pathname === "/";
+    if (isPublic) {
+      setIsValidating(false);
+      return;
+    }
 
     const tabKey = "saat_session_active";
     const isActiveTab = sessionStorage.getItem(tabKey);
 
     if (!isActiveTab) {
-      // Se não tem a marcação no sessionStorage (memória volátil da aba), é porque abriu em nova guia ou o navegador fechou.
-      // Desloga o usuário imediatamente.
+      // Aba nova identificada! Bloqueia a tela e derruba a sessão
       const supabase = createClient();
       supabase.auth.signOut().then(() => {
-        window.location.href = "/login";
+        window.location.replace("/login");
       });
+    } else {
+      setIsValidating(false);
     }
   }, [pathname]);
+
+  if (isValidating) {
+    return (
+      <div className="fixed inset-0 bg-white z-[9999] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-indigo-600 border-t-transparent"></div>
+      </div>
+    );
+  }
 
   return null;
 }

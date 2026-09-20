@@ -112,19 +112,23 @@ export default function TutorDashboardPage() {
         </section>
       </div>
 
-      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-slate-100 z-50">
+            <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-slate-100 z-50">
         <div className="flex">
           {[
-            { href: "/tutor/painel", label: "Painel", icon: "ðŸ“Š" },
-            { href: "/tutor/alunos", label: "Alunos", icon: "ðŸ‘¥" },
-            { href: "/tutor/chat", label: "Mensagens", icon: "ðŸ’¬" },
-            { href: "/tutor/perfil", label: "Perfil", icon: "ðŸ‘¤" },
-          ].map((item) => (
-            <Link key={item.href} href={item.href} className={`flex-1 flex flex-col items-center gap-1 py-3 text-xs ${item.href === "/tutor/painel" ? "text-indigo-600" : "text-slate-400"}`}>
-              <span className="text-lg">{item.icon}</span>
-              <span className="font-medium">{item.label}</span>
-            </Link>
-          ))}
+            { href: "/tutor/painel", label: "Painel", icon: LayoutDashboard },
+            { href: "/tutor/alunos", label: "Alunos", icon: Users },
+            { href: "/tutor/chat", label: "Mensagens", icon: MessageSquare },
+            { href: "/tutor/perfil", label: "Perfil", icon: User },
+          ].map((item) => {
+            const Icon = item.icon;
+            // Simplificado para evitar window reference is not defined during SSR (Hydration mismatch)
+            return (
+              <Link key={item.href} href={item.href} className="flex-1 flex flex-col items-center gap-1 py-3 text-xs text-slate-400 hover:text-indigo-600 focus:text-indigo-600">
+                <Icon size={20} />
+                <span className="font-medium">{item.label}</span>
+              </Link>
+            )
+          })}
         </div>
       </nav>
     </div>
