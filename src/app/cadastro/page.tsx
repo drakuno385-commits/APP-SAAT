@@ -84,7 +84,7 @@ export default function CadastroPage() {
         user_id: userId,
         escola_id: escola?.id ?? null,
         /* tutor_id removido do cadastro */
-        matricula: form.ra,
+        ra: form.ra,
         turma: form.turma,
         trabalha: form.trabalha,
         tipo_trabalho: form.trabalha ? form.tipoTrabalho : null,

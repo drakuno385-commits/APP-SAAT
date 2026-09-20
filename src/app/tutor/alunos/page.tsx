@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ChevronLeft, Search, Filter } from "lucide-react";
@@ -29,7 +29,7 @@ export default function ListaAlunosTutorPage() {
   const alunosFiltrados = alunos.filter(a => {
     const nome = a.profiles?.nome?.toLowerCase() || "";
     const matchBusca = nome.includes(busca.toLowerCase());
-    // Por enquanto, não temos regra de risco complexa na DB ainda
+    // Por enquanto, nÃ£o temos regra de risco complexa na DB ainda
     return matchBusca;
   });
 
@@ -66,7 +66,7 @@ export default function ListaAlunosTutorPage() {
                 : "bg-white border border-slate-200 text-slate-600"
             }`}
           >
-            {f === "todos" ? "Todos" : f === "risco" ? "🔴 Risco" : "🟡 Atenção"}
+            {f === "todos" ? "Todos" : f === "risco" ? "ðŸ”´ Risco" : "ðŸŸ¡ AtenÃ§Ã£o"}
           </button>
         ))}
       </div>
@@ -83,10 +83,10 @@ export default function ListaAlunosTutorPage() {
             <div key={aluno.id} className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-center justify-between">
               <div>
                 <h3 className="font-bold text-slate-800 text-lg">{aluno.profiles?.nome}</h3>
-                <p className="text-slate-500 text-sm">{aluno.turma} • RA: {aluno.matricula}</p>
+                <p className="text-slate-500 text-sm">{aluno.turma} â€¢ RA: {aluno.ra}</p>
                 <div className="flex gap-2 mt-2">
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">
-                    Trabalha: {aluno.trabalha ? "Sim" : "Não"}
+                    Trabalha: {aluno.trabalha ? "Sim" : "NÃ£o"}
                   </span>
                 </div>
               </div>
