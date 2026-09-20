@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ChevronRight, Send, UserCheck, Clock, UserPlus } from "lucide-react";
@@ -30,12 +30,13 @@ export default function TutorPage() {
         setTutorStatus(alunoInfo.tutor_status || null);
         
         if (alunoInfo.tutor_id) {
-          // Já tem tutor (pendente ou aprovado)
+          // JÃ¡ tem tutor (pendente ou aprovado)
           const { data: tutorInfo } = await supabase.from("profiles").select("id, nome").eq("id", alunoInfo.tutor_id).single();
           setMeuTutor(tutorInfo);
         } else {
-          // Não tem tutor, precisa escolher
-          const { data: lista } = await supabase.from("profiles").select("id, nome").eq("role", "tutor");
+          // NÃ£o tem tutor, precisa escolher
+          const { data: lista, error: erroTutor } = await supabase.from("profiles").select("id, nome").eq("role", "tutor");
+if (erroTutor) { alert("ERRO BANCO: " + erroTutor.message); console.log("ERRO", erroTutor); }
           setTutoresDisponiveis(lista || []);
         }
       }
@@ -78,11 +79,11 @@ export default function TutorPage() {
         <div className="p-4 flex flex-col gap-4">
           <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 text-center">
             <UserPlus size={32} className="text-blue-500 mx-auto mb-2" />
-            <h2 className="font-bold text-blue-800">Você ainda não tem um tutor!</h2>
-            <p className="text-sm text-blue-600 mt-1">Selecione um professor abaixo para te orientar. O professor precisará aprovar sua solicitação.</p>
+            <h2 className="font-bold text-blue-800">VocÃª ainda nÃ£o tem um tutor!</h2>
+            <p className="text-sm text-blue-600 mt-1">Selecione um professor abaixo para te orientar. O professor precisarÃ¡ aprovar sua solicitaÃ§Ã£o.</p>
           </div>
 
-          <h3 className="font-bold text-slate-700 mt-2">Tutores Disponíveis:</h3>
+          <h3 className="font-bold text-slate-700 mt-2">Tutores DisponÃ­veis:</h3>
           <div className="space-y-3">
             {tutoresDisponiveis.length === 0 ? (
               <p className="text-slate-500 text-sm text-center py-4 border-2 border-dashed border-slate-200 rounded-xl">Nenhum tutor cadastrado no sistema ainda.</p>
@@ -95,7 +96,7 @@ export default function TutorPage() {
                     </div>
                     <div>
                       <h4 className="font-bold text-slate-800">Prof. {t.nome}</h4>
-                      <p className="text-xs text-slate-500">Tutor Pedagógico</p>
+                      <p className="text-xs text-slate-500">Tutor PedagÃ³gico</p>
                     </div>
                   </div>
                   <button 
@@ -113,7 +114,7 @@ export default function TutorPage() {
     );
   }
 
-  // Tela 2: Aguardando aprovação
+  // Tela 2: Aguardando aprovaÃ§Ã£o
   if (tutorStatus === "pendente") {
     return (
       <div className="app-shell min-h-screen bg-slate-50">
@@ -128,9 +129,9 @@ export default function TutorPage() {
           <div className="w-20 h-20 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center mb-4">
             <Clock size={40} />
           </div>
-          <h2 className="text-xl font-bold text-slate-800 text-center">Solicitação Enviada!</h2>
+          <h2 className="text-xl font-bold text-slate-800 text-center">SolicitaÃ§Ã£o Enviada!</h2>
           <p className="text-slate-600 text-center mt-2 px-4">
-            Você solicitou orientação do <strong className="text-slate-800">Prof. {meuTutor.nome}</strong>. 
+            VocÃª solicitou orientaÃ§Ã£o do <strong className="text-slate-800">Prof. {meuTutor.nome}</strong>. 
             Aguarde o professor aprovar o seu pedido no painel dele.
           </p>
           
@@ -138,7 +139,7 @@ export default function TutorPage() {
             onClick={() => solicitarTutor("")} // Hackzinho visual para cancelar na demo
             className="mt-8 text-red-500 font-bold text-sm border border-red-200 bg-red-50 px-6 py-3 rounded-xl"
           >
-            Cancelar solicitação
+            Cancelar solicitaÃ§Ã£o
           </button>
         </div>
       </div>
@@ -225,9 +226,9 @@ export default function TutorPage() {
             <h2 className="text-xl font-bold text-slate-800">Prof. {meuTutor.nome}</h2>
             <UserCheck size={20} className="text-blue-500" />
           </div>
-          <p className="text-blue-600 font-medium text-sm">Tutor Pedagógico</p>
+          <p className="text-blue-600 font-medium text-sm">Tutor PedagÃ³gico</p>
           <p className="text-slate-500 text-sm mt-3 px-4">
-            Acompanhamento escolar e orientação sobre organização de estudos.
+            Acompanhamento escolar e orientaÃ§Ã£o sobre organizaÃ§Ã£o de estudos.
           </p>
 
           <button 
