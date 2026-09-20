@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ChevronRight, Send, UserCheck, Clock, UserPlus } from "lucide-react";
@@ -24,20 +24,24 @@ export default function TutorPage() {
     const { data: { user } } = await supabase.auth.getUser();
     
     if (user) {
-      const { data: alunoInfo } = await supabase.from("alunos").select("id, tutor_id, tutor_status").eq("user_id", user.id).single();
+      // 1. Sempre carrega a lista de tutores primeiro para garantir que a tela nao fique vazia
+      const { data: lista } = await supabase.from("profiles").select("id, nome").eq("role", "tutor");
+      setTutoresDisponiveis(lista || []);
+
+      // 2. Tenta carregar o aluno
+      const { data: alunoInfo, error: errAluno } = await supabase.from("alunos").select("id, tutor_id, tutor_status").eq("user_id", user.id).single();
+      
+      if (errAluno) {
+        console.error("Erro ao buscar aluno na tabela alunos:", errAluno);
+      }
+
       if (alunoInfo) {
         setAlunoId(alunoInfo.id);
         setTutorStatus(alunoInfo.tutor_status || null);
         
         if (alunoInfo.tutor_id) {
-          // JÃ¡ tem tutor (pendente ou aprovado)
           const { data: tutorInfo } = await supabase.from("profiles").select("id, nome").eq("id", alunoInfo.tutor_id).single();
           setMeuTutor(tutorInfo);
-        } else {
-          // NÃ£o tem tutor, precisa escolher
-          const { data: lista, error: erroTutor } = await supabase.from("profiles").select("id, nome").eq("role", "tutor");
-if (erroTutor) { alert("ERRO BANCO: " + erroTutor.message); console.log("ERRO", erroTutor); }
-          setTutoresDisponiveis(lista || []);
         }
       }
     }
@@ -45,7 +49,10 @@ if (erroTutor) { alert("ERRO BANCO: " + erroTutor.message); console.log("ERRO", 
   }
 
   async function solicitarTutor(tutorId: string) {
-    if (!alunoId) return;
+    if (!alunoId) {
+      alert("Erro: Seu cadastro de aluno não foi completado corretamente no banco de dados. Crie uma nova conta de aluno.");
+      return;
+    }
     setLoading(true);
     const supabase = createClient();
     await supabase.from("alunos").update({ 
@@ -53,7 +60,6 @@ if (erroTutor) { alert("ERRO BANCO: " + erroTutor.message); console.log("ERRO", 
       tutor_status: "pendente" 
     }).eq("id", alunoId);
     
-    // Recarrega
     carregarDados();
   }
 
@@ -65,7 +71,6 @@ if (erroTutor) { alert("ERRO BANCO: " + erroTutor.message); console.log("ERRO", 
 
   if (loading) return <div className="p-8 text-center text-slate-500 font-bold">Carregando...</div>;
 
-  // Tela 1: O aluno precisa escolher um tutor
   if (!meuTutor) {
     return (
       <div className="app-shell min-h-screen bg-slate-50">
@@ -79,11 +84,11 @@ if (erroTutor) { alert("ERRO BANCO: " + erroTutor.message); console.log("ERRO", 
         <div className="p-4 flex flex-col gap-4">
           <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 text-center">
             <UserPlus size={32} className="text-blue-500 mx-auto mb-2" />
-            <h2 className="font-bold text-blue-800">VocÃª ainda nÃ£o tem um tutor!</h2>
-            <p className="text-sm text-blue-600 mt-1">Selecione um professor abaixo para te orientar. O professor precisarÃ¡ aprovar sua solicitaÃ§Ã£o.</p>
+            <h2 className="font-bold text-blue-800">Você ainda não tem um tutor!</h2>
+            <p className="text-sm text-blue-600 mt-1">Selecione um professor abaixo para te orientar. O professor precisará aprovar sua solicitação.</p>
           </div>
 
-          <h3 className="font-bold text-slate-700 mt-2">Tutores DisponÃ­veis:</h3>
+          <h3 className="font-bold text-slate-700 mt-2">Tutores Disponíveis:</h3>
           <div className="space-y-3">
             {tutoresDisponiveis.length === 0 ? (
               <p className="text-slate-500 text-sm text-center py-4 border-2 border-dashed border-slate-200 rounded-xl">Nenhum tutor cadastrado no sistema ainda.</p>
@@ -96,7 +101,7 @@ if (erroTutor) { alert("ERRO BANCO: " + erroTutor.message); console.log("ERRO", 
                     </div>
                     <div>
                       <h4 className="font-bold text-slate-800">Prof. {t.nome}</h4>
-                      <p className="text-xs text-slate-500">Tutor PedagÃ³gico</p>
+                      <p className="text-xs text-slate-500">Tutor Pedagógico</p>
                     </div>
                   </div>
                   <button 
@@ -114,7 +119,6 @@ if (erroTutor) { alert("ERRO BANCO: " + erroTutor.message); console.log("ERRO", 
     );
   }
 
-  // Tela 2: Aguardando aprovaÃ§Ã£o
   if (tutorStatus === "pendente") {
     return (
       <div className="app-shell min-h-screen bg-slate-50">
@@ -129,24 +133,23 @@ if (erroTutor) { alert("ERRO BANCO: " + erroTutor.message); console.log("ERRO", 
           <div className="w-20 h-20 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center mb-4">
             <Clock size={40} />
           </div>
-          <h2 className="text-xl font-bold text-slate-800 text-center">SolicitaÃ§Ã£o Enviada!</h2>
+          <h2 className="text-xl font-bold text-slate-800 text-center">Solicitação Enviada!</h2>
           <p className="text-slate-600 text-center mt-2 px-4">
-            VocÃª solicitou orientaÃ§Ã£o do <strong className="text-slate-800">Prof. {meuTutor.nome}</strong>. 
+            Você solicitou orientação do <strong className="text-slate-800">Prof. {meuTutor.nome}</strong>. 
             Aguarde o professor aprovar o seu pedido no painel dele.
           </p>
           
           <button 
-            onClick={() => solicitarTutor("")} // Hackzinho visual para cancelar na demo
+            onClick={() => solicitarTutor("")}
             className="mt-8 text-red-500 font-bold text-sm border border-red-200 bg-red-50 px-6 py-3 rounded-xl"
           >
-            Cancelar solicitaÃ§Ã£o
+            Cancelar solicitação
           </button>
         </div>
       </div>
     );
   }
 
-  // Tela 3: Tutor Aprovado (Mostra Chat)
   if (showChat) {
     return (
       <div className="app-shell min-h-screen bg-slate-50 flex flex-col">
@@ -203,7 +206,6 @@ if (erroTutor) { alert("ERRO BANCO: " + erroTutor.message); console.log("ERRO", 
     );
   }
 
-  // Tela 4: Perfil do Tutor (Aprovado)
   return (
     <div className="app-shell min-h-screen bg-slate-50">
       <header className="flex items-center justify-between px-4 py-4 border-b border-slate-100 bg-white">
@@ -226,9 +228,9 @@ if (erroTutor) { alert("ERRO BANCO: " + erroTutor.message); console.log("ERRO", 
             <h2 className="text-xl font-bold text-slate-800">Prof. {meuTutor.nome}</h2>
             <UserCheck size={20} className="text-blue-500" />
           </div>
-          <p className="text-blue-600 font-medium text-sm">Tutor PedagÃ³gico</p>
+          <p className="text-blue-600 font-medium text-sm">Tutor Pedagógico</p>
           <p className="text-slate-500 text-sm mt-3 px-4">
-            Acompanhamento escolar e orientaÃ§Ã£o sobre organizaÃ§Ã£o de estudos.
+            Acompanhamento escolar e orientação sobre organização de estudos.
           </p>
 
           <button 
@@ -239,7 +241,7 @@ if (erroTutor) { alert("ERRO BANCO: " + erroTutor.message); console.log("ERRO", 
           </button>
           
           <button 
-            onClick={() => setTutorStatus("pendente")} // Hack visual para a demo (como se tivesse trocado e voltado pra pendente)
+            onClick={() => setTutorStatus("pendente")}
             className="mt-4 text-xs font-bold text-slate-400 hover:text-slate-600 transition"
           >
             Trocar de Tutor

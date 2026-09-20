@@ -77,7 +77,7 @@ export default function CadastroPage() {
 
     if (perfil === "aluno") {
       // 3. Busca escola
-      const { data: escola } = await supabase.from("escolas").select("id").limit(1).single();
+      let escola = null; try { const { data } = await supabase.from("escolas").select("id").limit(1).single(); escola = data; } catch(e) {}
 
       // 4. Cria aluno
       await supabase.from("alunos").insert({
