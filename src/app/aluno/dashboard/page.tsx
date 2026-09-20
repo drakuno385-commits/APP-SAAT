@@ -32,11 +32,11 @@ export default function DashboardPage() {
       bg: "bg-green-50 border-green-200",
       textColor: "text-green-800",
       descColor: "text-green-700",
-      description: "Voc est em dia com seus estudos. Continue assim!",
+      description: "Você est em dia com seus estudos. Continue assim!",
     },
     atencao: {
       icon: <AlertTriangle size={16} className="text-yellow-600" />,
-      label: "Ateno",
+      label: "Atenção",
       bg: "bg-yellow-50 border-yellow-200",
       textColor: "text-yellow-800",
       descColor: "text-yellow-700",
@@ -48,7 +48,7 @@ export default function DashboardPage() {
       bg: "bg-red-50 border-red-200",
       textColor: "text-red-800",
       descColor: "text-red-700",
-      description: "Ateno! Voc est em risco de reprovao. Procure seu tutor imediatamente.",
+      description: "Atenção! Você est em risco de reprovao. Procure seu tutor imediatamente.",
     },
   }[situacao];
 
@@ -159,7 +159,7 @@ export default function DashboardPage() {
       <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-slate-100 z-50">
         <div className="flex">
           {[
-            { href: "/aluno/dashboard", label: "Incio", icon: "" },
+            { href: "/aluno/dashboard", label: "Início", icon: "" },
             { href: "/aluno/faltas", label: "Faltas", icon: "" },
             { href: "/aluno/atividades", label: "Atividades", icon: "" },
             { href: "/aluno/tutor", label: "Tutor", icon: "" },

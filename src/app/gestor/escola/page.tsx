@@ -10,7 +10,7 @@ const MapaEscola = dynamic(() => import("@/components/gestor/MapaEscola"), { ssr
 export default function EscolaCadastroPage() {
   const [form, setForm] = useState({
     nome: "EE Professora Maria Aparecida",
-    endereco: "Rua das Flores, 123 - So Paulo, SP",
+    endereco: "Rua das Flores, 123 - São Paulo, SP",
     horarioEntrada: "07:00",
     horarioSaida: "16:00",
     raio: 100,
@@ -32,7 +32,7 @@ export default function EscolaCadastroPage() {
         setCapturando(false);
       },
       () => {
-        // Usa coordenadas de So Paulo como fallback para demo
+        // Usa coordenadas de São Paulo como fallback para demo
         setCoords({ lat: -23.5505, lng: -46.6333 });
         setCapturando(false);
       },

@@ -75,7 +75,7 @@ export default function PerfilAlunoPage() {
       <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-slate-100 z-50">
         <div className="flex">
           {[
-            { href: "/aluno/dashboard", label: "Incio", icon: "" },
+            { href: "/aluno/dashboard", label: "Início", icon: "" },
             { href: "/aluno/faltas", label: "Faltas", icon: "" },
             { href: "/aluno/atividades", label: "Atividades", icon: "" },
             { href: "/aluno/tutor", label: "Tutor", icon: "" },

@@ -4,7 +4,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recha
 
 const DISTRIBUICAO = [
   { name: "Normal", value: 20, color: "#16a34a" },
-  { name: "Ateno", value: 19, color: "#d97706" },
+  { name: "Atenção", value: 19, color: "#d97706" },
   { name: "Risco", value: 6, color: "#dc2626" },
 ];
 

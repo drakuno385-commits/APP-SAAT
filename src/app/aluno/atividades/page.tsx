@@ -4,9 +4,9 @@ import { ChevronRight, ExternalLink } from "lucide-react";
 import { mockAtividades } from "@/lib/mock-data";
 
 const MATERIA_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
-  "Matemtica": { bg: "bg-red-50", text: "text-red-700", dot: "bg-red-500" },
-  "Portugus":  { bg: "bg-blue-50", text: "text-blue-700", dot: "bg-blue-500" },
-  "Histria":   { bg: "bg-green-50", text: "text-green-700", dot: "bg-green-500" },
+  "Matemática": { bg: "bg-red-50", text: "text-red-700", dot: "bg-red-500" },
+  "Português":  { bg: "bg-blue-50", text: "text-blue-700", dot: "bg-blue-500" },
+  "História":   { bg: "bg-green-50", text: "text-green-700", dot: "bg-green-500" },
   "Cincias":   { bg: "bg-purple-50", text: "text-purple-700", dot: "bg-purple-500" },
   "Geografia":  { bg: "bg-yellow-50", text: "text-yellow-700", dot: "bg-yellow-500" },
   "Ingls":     { bg: "bg-orange-50", text: "text-orange-700", dot: "bg-orange-500" },
@@ -100,7 +100,7 @@ export default function AtividadesPage() {
       <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-slate-100 z-50">
         <div className="flex">
           {[
-            { href: "/aluno/dashboard", label: "Incio", icon: "" },
+            { href: "/aluno/dashboard", label: "Início", icon: "" },
             { href: "/aluno/faltas", label: "Faltas", icon: "" },
             { href: "/aluno/atividades", label: "Atividades", icon: "" },
             { href: "/aluno/tutor", label: "Tutor", icon: "" },

@@ -62,7 +62,7 @@ export default function FaltasPage() {
                   : "bg-green-100 text-green-700"
               }`}
             >
-              {total >= limiteAlerta ? " Alto" : total >= 2 ? " Ateno" : " Normal"}
+              {total >= limiteAlerta ? " Alto" : total >= 2 ? " Atenção" : " Normal"}
             </span>
           </div>
         </div>
@@ -72,7 +72,7 @@ export default function FaltasPage() {
           <div className="bg-yellow-50 rounded-2xl p-4 border border-yellow-200 flex gap-3">
             <AlertTriangle size={18} className="text-yellow-600 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm text-yellow-800 font-medium">Voc est acumulando faltas.</p>
+              <p className="text-sm text-yellow-800 font-medium">Você est acumulando faltas.</p>
               <p className="text-xs text-yellow-700 mt-0.5">Converse com seu tutor para organizar sua rotina.</p>
             </div>
           </div>
@@ -105,7 +105,7 @@ export default function FaltasPage() {
       <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-slate-100 z-50">
         <div className="flex">
           {[
-            { href: "/aluno/dashboard", label: "Incio", icon: "" },
+            { href: "/aluno/dashboard", label: "Início", icon: "" },
             { href: "/aluno/faltas", label: "Faltas", icon: "" },
             { href: "/aluno/atividades", label: "Atividades", icon: "" },
             { href: "/aluno/tutor", label: "Tutor", icon: "" },

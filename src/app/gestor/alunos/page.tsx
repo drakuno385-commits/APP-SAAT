@@ -51,7 +51,7 @@ export default function GestorAlunosPage() {
         <div className="flex gap-2 mb-3">
           {[
             { label: `${risco} Risco`, color: "bg-red-100 text-red-700", key: "risco" },
-            { label: `${atencao} Ateno`, color: "bg-yellow-100 text-yellow-700", key: "atencao" },
+            { label: `${atencao} Atenção`, color: "bg-yellow-100 text-yellow-700", key: "atencao" },
             { label: `${normal} Normal`, color: "bg-green-100 text-green-700", key: "normal" },
           ].map((f) => (
             <button key={f.key} onClick={() => setFiltro(filtro === f.key as typeof filtro ? "todos" : f.key as typeof filtro)}

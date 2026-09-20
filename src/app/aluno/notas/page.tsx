@@ -38,9 +38,9 @@ export default function NotasPage() {
       } else {
         // Matrias padro se no houver nenhuma
         setNotas([
-          { materia: "Matemtica", b1: "", b2: "", b3: "", b4: "" },
-          { materia: "Portugus", b1: "", b2: "", b3: "", b4: "" },
-          { materia: "Histria", b1: "", b2: "", b3: "", b4: "" },
+          { materia: "Matemática", b1: "", b2: "", b3: "", b4: "" },
+          { materia: "Português", b1: "", b2: "", b3: "", b4: "" },
+          { materia: "História", b1: "", b2: "", b3: "", b4: "" },
           { materia: "Geografia", b1: "", b2: "", b3: "", b4: "" },
           { materia: "Cincias", b1: "", b2: "", b3: "", b4: "" }
         ]);

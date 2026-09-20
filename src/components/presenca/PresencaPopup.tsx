@@ -81,7 +81,7 @@ export function PresencaPopup({ escola }: PresencaPopupProps) {
           setTimeout(() => setShow(false), 3000);
         } else {
           setStatus("error");
-          setMsg("Você está fora da escola!");
+          setMsg("Vocêê está fora da escola!");
           
           if (user) {
             const { data: alunoInfo } = await supabase.from("alunos").select("id").eq("user_id", user.id).single();
@@ -99,7 +99,7 @@ export function PresencaPopup({ escola }: PresencaPopupProps) {
       (err) => {
         setStatus("error");
         setMsg(err.message === "User denied Geolocation" 
-          ? "Você negou o acesso à localização." 
+          ? "Vocêê negou o acesso à localização." 
           : "Não foi possível verificar sua localização.");
         marcarComoVisto();
       },
@@ -123,7 +123,7 @@ export function PresencaPopup({ escola }: PresencaPopupProps) {
           </div>
           <h2 className="text-white font-bold text-xl">Confirmação de Presença</h2>
           <p className="text-blue-100 text-sm mt-1">
-            São {HORA_AULA} - O período de aula iniciou! Confirme que você está na escola.
+            São {HORA_AULA} - O período de aula iniciou! Confirme que vocêê está na escola.
           </p>
         </div>
 
@@ -131,7 +131,7 @@ export function PresencaPopup({ escola }: PresencaPopupProps) {
           {status === "idle" && (
             <>
               <p className="text-slate-600 text-sm mb-6">
-                Precisamos acessar o GPS do seu celular para validar se você está dentro da escola.
+                Precisamos acessar o GPS do seu celular para validar se vocêê está dentro da escola.
               </p>
               <button
                 onClick={confirmarPresenca}
@@ -170,7 +170,7 @@ export function PresencaPopup({ escola }: PresencaPopupProps) {
           {status === "error" && (
             <div className="py-2 flex flex-col items-center gap-3">
               <XCircle size={48} className="text-red-500" />
-              <h2 className="font-bold text-red-600 text-lg">Você não está na escola</h2>
+              <h2 className="font-bold text-red-600 text-lg">Vocêê não está na escola</h2>
               <p className="text-slate-600 text-sm">{msg}</p>
               <p className="text-xs text-red-500 font-bold mt-2">Uma FALTA foi registrada e precisa de justificativa com seu Tutor.</p>
               <button

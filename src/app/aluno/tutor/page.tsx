@@ -84,7 +84,7 @@ export default function TutorPage() {
         <div className="p-4 flex flex-col gap-4">
           <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 text-center">
             <UserPlus size={32} className="text-blue-500 mx-auto mb-2" />
-            <h2 className="font-bold text-blue-800">Você ainda não tem um tutor!</h2>
+            <h2 className="font-bold text-blue-800">Vocêê ainda não tem um tutor!</h2>
             <p className="text-sm text-blue-600 mt-1">Selecione um professor abaixo para te orientar. O professor precisará aprovar sua solicitação.</p>
           </div>
 
@@ -108,7 +108,7 @@ export default function TutorPage() {
                     onClick={() => solicitarTutor(t.id)}
                     className="bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-full hover:bg-indigo-700 transition"
                   >
-                    Solicitar
+                    Sãolicitar
                   </button>
                 </div>
               ))
@@ -133,9 +133,9 @@ export default function TutorPage() {
           <div className="w-20 h-20 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center mb-4">
             <Clock size={40} />
           </div>
-          <h2 className="text-xl font-bold text-slate-800 text-center">Solicitação Enviada!</h2>
+          <h2 className="text-xl font-bold text-slate-800 text-center">Sãolicitação Enviada!</h2>
           <p className="text-slate-600 text-center mt-2 px-4">
-            Você solicitou orientação do <strong className="text-slate-800">Prof. {meuTutor.nome}</strong>. 
+            Vocêê solicitou orientação do <strong className="text-slate-800">Prof. {meuTutor.nome}</strong>. 
             Aguarde o professor aprovar o seu pedido no painel dele.
           </p>
           
