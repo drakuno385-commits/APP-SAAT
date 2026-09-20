@@ -16,7 +16,7 @@ export default function CadastroPage() {
   const router = useRouter();
   const [step, setStep] = useState<"dados" | "conta">("dados");
   const [form, setForm] = useState({
-    nome: "", ra: "", turma: "", escola: "EE Professora Maria Aparecida",
+    nome: "", ra: "", turma: "", escola: "EE Prof. Eurípedes Simões de Paula",
     trabalha: true, tipoTrabalho: "Atendente",
     diasTrabalho: ["seg", "ter", "qua", "qui", "sex"] as string[],
     horarioEntrada: "17:00", horarioSaida: "22:00",

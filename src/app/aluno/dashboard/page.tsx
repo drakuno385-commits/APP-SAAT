@@ -70,6 +70,16 @@ export default function DashboardPage() {
             </div>
           </Link>
 
+          <Link href="/aluno/notas">
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 hover:shadow-md transition">
+              <div className="flex items-center gap-2 mb-2">
+                <BookOpen size={16} className="text-indigo-500" />
+                <span className="text-xs text-slate-500 font-medium">Notas</span>
+              </div>
+              <p className="text-3xl font-black text-slate-800">{aluno.media?.toFixed(1)}</p>
+            </div>
+          </Link>
+
           <Link href="/aluno/atividades">
             <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 hover:shadow-md transition">
               <div className="flex items-center gap-2 mb-2">
