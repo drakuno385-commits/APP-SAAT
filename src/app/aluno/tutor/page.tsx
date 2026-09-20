@@ -1,170 +1,250 @@
-﻿"use client";
-import { useState } from "react";
+"use client";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ChevronRight, Send, Calendar } from "lucide-react";
-import { mockTutor, mockMensagens } from "@/lib/mock-data";
+import { ChevronRight, Send, UserCheck, Clock, UserPlus } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function TutorPage() {
-  const tutor = mockTutor;
-  const [mensagens, setMensagens] = useState(mockMensagens);
-  const [novaMensagem, setNovaMensagem] = useState("");
+  const [alunoId, setAlunoId] = useState<string | null>(null);
+  const [meuTutor, setMeuTutor] = useState<any>(null);
+  const [tutorStatus, setTutorStatus] = useState<"pendente" | "aprovado" | null>(null);
+  const [tutoresDisponiveis, setTutoresDisponiveis] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showChat, setShowChat] = useState(false);
+  const [mensagens, setMensagens] = useState<any[]>([]);
+  const [novaMensagem, setNovaMensagem] = useState("");
+
+  useEffect(() => {
+    carregarDados();
+  }, []);
+
+  async function carregarDados() {
+    setLoading(true);
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (user) {
+      const { data: alunoInfo } = await supabase.from("alunos").select("id, tutor_id, tutor_status").eq("user_id", user.id).single();
+      if (alunoInfo) {
+        setAlunoId(alunoInfo.id);
+        setTutorStatus(alunoInfo.tutor_status || null);
+        
+        if (alunoInfo.tutor_id) {
+          // Já tem tutor (pendente ou aprovado)
+          const { data: tutorInfo } = await supabase.from("profiles").select("id, nome").eq("id", alunoInfo.tutor_id).single();
+          setMeuTutor(tutorInfo);
+        } else {
+          // Não tem tutor, precisa escolher
+          const { data: lista } = await supabase.from("profiles").select("id, nome").eq("role", "tutor");
+          setTutoresDisponiveis(lista || []);
+        }
+      }
+    }
+    setLoading(false);
+  }
+
+  async function solicitarTutor(tutorId: string) {
+    if (!alunoId) return;
+    setLoading(true);
+    const supabase = createClient();
+    await supabase.from("alunos").update({ 
+      tutor_id: tutorId, 
+      tutor_status: "pendente" 
+    }).eq("id", alunoId);
+    
+    // Recarrega
+    carregarDados();
+  }
 
   function enviarMensagem() {
     if (!novaMensagem.trim()) return;
-    setMensagens([
-      ...mensagens,
-      {
-        id: `m${Date.now()}`,
-        remetente_id: "aluno-1",
-        destinatario_id: "tutor-1",
-        texto: novaMensagem,
-        created_at: new Date().toISOString(),
-        lida: false,
-      },
-    ]);
+    setMensagens([...mensagens, { texto: novaMensagem, eu: true }]);
     setNovaMensagem("");
   }
 
-  if (showChat) {
+  if (loading) return <div className="p-8 text-center text-slate-500 font-bold">Carregando...</div>;
+
+  // Tela 1: O aluno precisa escolher um tutor
+  if (!meuTutor) {
     return (
-      <div className="app-shell min-h-screen bg-slate-50 flex flex-col">
-        {/* TopBar */}
-        <header className="flex items-center gap-3 px-4 py-4 bg-white border-b border-slate-100 sticky top-0 z-40">
-          <button onClick={() => setShowChat(false)} className="p-1 rounded-full hover:bg-slate-100">
-            <ChevronRight size={20} className="text-slate-600 rotate-180" />
-          </button>
-          <div className="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center font-bold text-blue-700">
-            {tutor.nome[0]}
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-slate-800">{tutor.nome}</p>
-            <p className="text-xs text-green-500">Em acompanhamento</p>
-          </div>
+      <div className="app-shell min-h-screen bg-slate-50">
+        <header className="flex items-center px-4 py-4 border-b border-slate-200 bg-white">
+          <Link href="/aluno/dashboard" className="p-2 -ml-2 rounded-full hover:bg-slate-100">
+            <ChevronRight size={24} className="text-slate-600 rotate-180" />
+          </Link>
+          <h1 className="font-bold text-slate-800 ml-2">Escolher Tutor</h1>
         </header>
 
-        {/* Mensagens */}
-        <div className="flex-1 px-4 py-4 overflow-y-auto flex flex-col gap-3 pb-28">
-          {mensagens.map((msg) => {
-            const isMine = msg.remetente_id === "aluno-1";
-            return (
-              <div key={msg.id} className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
-                <div
-                  className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm shadow-sm ${
-                    isMine
-                      ? "bg-blue-600 text-white rounded-br-sm"
-                      : "bg-white text-slate-700 rounded-bl-sm border border-slate-100"
-                  }`}
-                >
-                  {msg.texto}
-                  <p className={`text-xs mt-1 ${isMine ? "text-blue-200" : "text-slate-400"}`}>
-                    {new Date(msg.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <div className="p-4 flex flex-col gap-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 text-center">
+            <UserPlus size={32} className="text-blue-500 mx-auto mb-2" />
+            <h2 className="font-bold text-blue-800">Você ainda não tem um tutor!</h2>
+            <p className="text-sm text-blue-600 mt-1">Selecione um professor abaixo para te orientar. O professor precisará aprovar sua solicitação.</p>
+          </div>
 
-        {/* Input */}
-        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-slate-100 px-4 py-3 flex gap-2">
-          <input
-            value={novaMensagem}
-            onChange={(e) => setNovaMensagem(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && enviarMensagem()}
-            placeholder="Digite uma mensagem..."
-            className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            onClick={enviarMensagem}
-            className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center hover:bg-blue-700 transition flex-shrink-0"
+          <h3 className="font-bold text-slate-700 mt-2">Tutores Disponíveis:</h3>
+          <div className="space-y-3">
+            {tutoresDisponiveis.length === 0 ? (
+              <p className="text-slate-500 text-sm text-center py-4 border-2 border-dashed border-slate-200 rounded-xl">Nenhum tutor cadastrado no sistema ainda.</p>
+            ) : (
+              tutoresDisponiveis.map(t => (
+                <div key={t.id} className="bg-white border border-slate-200 p-4 rounded-xl flex items-center justify-between shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center font-bold">
+                      {t.nome.charAt(0)}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-slate-800">Prof. {t.nome}</h4>
+                      <p className="text-xs text-slate-500">Tutor Pedagógico</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => solicitarTutor(t.id)}
+                    className="bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-full hover:bg-indigo-700 transition"
+                  >
+                    Solicitar
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Tela 2: Aguardando aprovação
+  if (tutorStatus === "pendente") {
+    return (
+      <div className="app-shell min-h-screen bg-slate-50">
+        <header className="flex items-center px-4 py-4 border-b border-slate-200 bg-white">
+          <Link href="/aluno/dashboard" className="p-2 -ml-2 rounded-full hover:bg-slate-100">
+            <ChevronRight size={24} className="text-slate-600 rotate-180" />
+          </Link>
+          <h1 className="font-bold text-slate-800 ml-2">Meu Tutor</h1>
+        </header>
+
+        <div className="p-4 flex flex-col items-center justify-center mt-10">
+          <div className="w-20 h-20 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center mb-4">
+            <Clock size={40} />
+          </div>
+          <h2 className="text-xl font-bold text-slate-800 text-center">Solicitação Enviada!</h2>
+          <p className="text-slate-600 text-center mt-2 px-4">
+            Você solicitou orientação do <strong className="text-slate-800">Prof. {meuTutor.nome}</strong>. 
+            Aguarde o professor aprovar o seu pedido no painel dele.
+          </p>
+          
+          <button 
+            onClick={() => solicitarTutor("")} // Hackzinho visual para cancelar na demo
+            className="mt-8 text-red-500 font-bold text-sm border border-red-200 bg-red-50 px-6 py-3 rounded-xl"
           >
-            <Send size={16} className="text-white" />
+            Cancelar solicitação
           </button>
         </div>
       </div>
     );
   }
 
+  // Tela 3: Tutor Aprovado (Mostra Chat)
+  if (showChat) {
+    return (
+      <div className="app-shell min-h-screen bg-slate-50 flex flex-col">
+        <header className="bg-white px-4 py-4 border-b border-slate-100 flex items-center gap-3 sticky top-0">
+          <button onClick={() => setShowChat(false)} className="p-1 rounded-full hover:bg-slate-100">
+            <ChevronRight size={24} className="text-slate-600 rotate-180" />
+          </button>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-bold">
+              {meuTutor.nome.charAt(0)}
+            </div>
+            <div>
+              <h2 className="font-semibold text-slate-800 leading-tight">Prof. {meuTutor.nome}</h2>
+              <p className="text-xs text-green-600 font-medium">Online</p>
+            </div>
+          </div>
+        </header>
+
+        <div className="flex-1 p-4 flex flex-col gap-4 overflow-y-auto">
+          <div className="flex justify-center">
+            <span className="text-[10px] font-bold text-slate-400 bg-slate-200 px-3 py-1 rounded-full uppercase tracking-wider">
+              Hoje
+            </span>
+          </div>
+          {mensagens.map((msg, i) => (
+            <div key={i} className={`flex ${msg.eu ? "justify-end" : "justify-start"}`}>
+              <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${msg.eu ? "bg-blue-600 text-white rounded-br-sm" : "bg-white border border-slate-200 text-slate-700 rounded-bl-sm shadow-sm"}`}>
+                <p className="text-sm">{msg.texto}</p>
+                <span className={`text-[10px] block mt-1 ${msg.eu ? "text-blue-200 text-right" : "text-slate-400"}`}>Agora</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="p-4 bg-white border-t border-slate-100 pb-8">
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={novaMensagem}
+              onChange={(e) => setNovaMensagem(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && enviarMensagem()}
+              placeholder="Digite sua mensagem..."
+              className="flex-1 bg-slate-50 border border-slate-200 rounded-full px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              onClick={enviarMensagem}
+              className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center shrink-0 hover:bg-blue-700 transition"
+            >
+              <Send size={20} className="ml-1" />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Tela 4: Perfil do Tutor (Aprovado)
   return (
-    <div className="app-shell min-h-screen bg-white">
-      {/* TopBar */}
-      <header className="flex items-center justify-between px-4 py-4 border-b border-slate-100">
-        <Link href="/aluno/dashboard" className="p-1 rounded-full hover:bg-slate-100">
-          <ChevronRight size={20} className="text-slate-600 rotate-180" />
+    <div className="app-shell min-h-screen bg-slate-50">
+      <header className="flex items-center justify-between px-4 py-4 border-b border-slate-100 bg-white">
+        <Link href="/aluno/dashboard" className="p-1 rounded-full hover:bg-slate-100 -ml-2">
+          <ChevronRight size={24} className="text-slate-600 rotate-180" />
         </Link>
-        <h1 className="font-semibold text-slate-800">Tutor do Aluno Trabalhador</h1>
+        <h1 className="font-semibold text-slate-800">Meu Tutor</h1>
         <div className="w-8" />
       </header>
 
-      <div className="px-4 py-6 flex flex-col gap-5">
-        {/* Avatar + Info */}
-        <div className="flex flex-col items-center gap-4 py-4">
-          <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center text-4xl font-bold text-blue-700">
-            {tutor.nome[0]}
+      <div className="px-4 py-6 flex flex-col gap-6">
+        <div className="bg-white rounded-3xl p-6 flex flex-col items-center text-center shadow-sm border border-slate-100 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-24 bg-blue-600"></div>
+          <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-3 relative z-10 shadow-lg p-1">
+            <div className="w-full h-full bg-blue-100 rounded-full flex items-center justify-center text-4xl font-bold text-blue-700">
+              {meuTutor.nome.charAt(0)}
+            </div>
           </div>
-          <div className="text-center">
-            <h2 className="text-xl font-bold text-slate-800">{tutor.nome}</h2>
-            <p className="text-sm text-slate-500 mt-1">Especialidade: {tutor.especialidade}</p>
+          <div className="flex items-center gap-2 mb-1">
+            <h2 className="text-xl font-bold text-slate-800">Prof. {meuTutor.nome}</h2>
+            <UserCheck size={20} className="text-blue-500" />
           </div>
-        </div>
+          <p className="text-blue-600 font-medium text-sm">Tutor Pedagógico</p>
+          <p className="text-slate-500 text-sm mt-3 px-4">
+            Acompanhamento escolar e orientação sobre organização de estudos.
+          </p>
 
-        {/* Info cards */}
-        <div className="bg-slate-50 rounded-2xl divide-y divide-slate-100">
-          <div className="flex items-center justify-between px-4 py-3">
-            <span className="text-sm text-slate-500">Meu acompanhamento</span>
-          </div>
-          <div className="flex items-center justify-between px-4 py-3">
-            <span className="text-sm text-slate-600">ltima conversa</span>
-            <span className="text-sm font-semibold text-slate-800">{tutor.ultima_conversa}</span>
-          </div>
-          <div className="flex items-center justify-between px-4 py-3">
-            <span className="text-sm text-slate-600 flex items-center gap-2">
-              <Calendar size={14} /> Prximo acompanhamento
-            </span>
-            <span className="text-sm font-semibold text-slate-800">{tutor.proximo_acompanhamento}</span>
-          </div>
-          <div className="flex items-center justify-between px-4 py-3">
-            <span className="text-sm text-slate-600">Situao</span>
-            <span className="text-xs bg-yellow-100 text-yellow-700 px-2.5 py-1 rounded-full font-semibold">
-               {tutor.situacao}
-            </span>
-          </div>
+          <button 
+            onClick={() => setShowChat(true)}
+            className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl transition shadow-md flex items-center justify-center gap-2"
+          >
+            <Send size={18} /> Iniciar Conversa
+          </button>
+          
+          <button 
+            onClick={() => setTutorStatus("pendente")} // Hack visual para a demo (como se tivesse trocado e voltado pra pendente)
+            className="mt-4 text-xs font-bold text-slate-400 hover:text-slate-600 transition"
+          >
+            Trocar de Tutor
+          </button>
         </div>
-
-        {/* Botes */}
-        <button
-          onClick={() => setShowChat(true)}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-2"
-        >
-           Conversar com tutor
-        </button>
-        <button className="w-full border border-slate-200 text-slate-600 font-semibold py-3.5 rounded-xl hover:bg-slate-50 transition flex items-center justify-center gap-2">
-           Solicitar atendimento
-        </button>
       </div>
-
-      {/* Bottom Nav */}
-      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-slate-100 z-50">
-        <div className="flex">
-          {[
-            { href: "/aluno/dashboard", label: "Incio", icon: "" },
-            { href: "/aluno/faltas", label: "Faltas", icon: "" },
-            { href: "/aluno/atividades", label: "Atividades", icon: "" },
-            { href: "/aluno/tutor", label: "Tutor", icon: "" },
-            { href: "/aluno/perfil", label: "Perfil", icon: "" },
-          ].map((item) => (
-            <Link key={item.href} href={item.href}
-              className={`flex-1 flex flex-col items-center gap-1 py-3 text-xs ${
-                item.href === "/aluno/tutor" ? "text-blue-600" : "text-slate-400"
-              }`}
-            >
-              <span className="text-lg">{item.icon}</span>
-              <span className="font-medium">{item.label}</span>
-            </Link>
-          ))}
-        </div>
-      </nav>
     </div>
   );
 }
