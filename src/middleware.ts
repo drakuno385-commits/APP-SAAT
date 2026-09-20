@@ -33,23 +33,19 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const isPublic = PUBLIC_ROUTES.some((r) => pathname.startsWith(r));
 
-  // Nao autenticado acessando rota privada -> redireciona para login
   if (!user && !isPublic && pathname !== "/") {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Verifica as rotas se estiver logado
   if (user) {
-    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-    const role = profile?.role ?? "aluno";
-    const dest = ROLE_ROUTES[role];
+    // Busca o role direto do metadata do usuário (MUITO mais rápido e a prova de falhas)
+    const role = user.user_metadata?.role || "aluno";
+    const dest = ROLE_ROUTES[role] || "/aluno/dashboard";
 
-    // Se tentar acessar pagina de login, joga pro painel correto
     if (isPublic) {
       return NextResponse.redirect(new URL(dest, request.url));
     }
 
-    // TRAVA DE SEGURANCA: So entra na sua area!
     if (role === "aluno" && !pathname.startsWith("/aluno")) {
       return NextResponse.redirect(new URL(dest, request.url));
     }

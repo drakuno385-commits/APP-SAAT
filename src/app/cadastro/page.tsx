@@ -61,7 +61,7 @@ export default function CadastroPage() {
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: form.email,
       password: form.senha,
-      options: { data: { nome: form.nome } },
+      options: { data: { nome: form.nome, role: perfil } },
     });
 
     if (authError || !authData.user) {
