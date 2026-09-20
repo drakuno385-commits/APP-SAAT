@@ -1,249 +1,177 @@
-﻿"use client";
-import { useState, useEffect, useCallback } from "react";
-import { MapPin, CheckCircle, AlertTriangle, X, Loader2 } from "lucide-react";
+"use client";
+import { useState, useEffect } from "react";
+import { MapPin, CheckCircle, XCircle } from "lucide-react";
 import { calcDistanceMeters } from "@/lib/utils";
 import { Escola } from "@/lib/types";
+import { createClient } from "@/lib/supabase/client";
 
 interface PresencaPopupProps {
   escola: Escola;
 }
 
-type PresencaStatus = "idle" | "loading" | "dentro" | "fora" | "confirmada" | "justificando" | "finalizado";
-
 export function PresencaPopup({ escola }: PresencaPopupProps) {
   const [show, setShow] = useState(false);
-  const [status, setStatus] = useState<PresencaStatus>("idle");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [distancia, setDistancia] = useState<number | null>(null);
-  const [justificativa, setJustificativa] = useState("");
-  const [hojeConfirmado, setHojeConfirmado] = useState(false);
+  const [msg, setMsg] = useState("");
 
-  // Verifica se est no horrio de entrada (15 minutos)
-  const isHorarioEntrada = useCallback(() => {
-    const now = new Date();
-    const [hh, mm] = escola.horario_entrada.split(":").map(Number);
-    const entradaMin = hh * 60 + mm;
-    const nowMin = now.getHours() * 60 + now.getMinutes();
-    return Math.abs(nowMin - entradaMin) <= 15;
-  }, [escola.horario_entrada]);
+  // Usar horários da apresentação
+  const HORA_AULA = "14:15";
 
   useEffect(() => {
-    // Checa se j confirmou hoje
-    const hoje = new Date().toDateString();
-    const confirmadoHoje = localStorage.getItem(`presenca_${hoje}`);
-    if (confirmadoHoje) {
-      setHojeConfirmado(true);
-      return;
+    // Para a apresentação, vamos forçar o popup a aparecer se for a hora de entrada (14:15)
+    // Como é uma demo, podemos até deixar aparecer sempre no primeiro login do dia
+    
+    // Verifica se já confirmou hoje no localStorage (apenas para demo)
+    const dataHoje = new Date().toISOString().split("T")[0];
+    const presencaHoje = localStorage.getItem(`presenca_${dataHoje}`);
+
+    if (!presencaHoje) {
+      // Pequeno delay para a animação do dashboard carregar antes do popup
+      const t = setTimeout(() => setShow(true), 1500);
+      return () => clearTimeout(t);
     }
+  }, []);
 
-    // Em produo, verificar o horrio real; no demo, mostra sempre para testar
-    // Descomente para verificar horrio real: if (!isHorarioEntrada()) return;
-    const timer = setTimeout(() => setShow(true), 1500);
-    return () => clearTimeout(timer);
-  }, [isHorarioEntrada]);
-
-  const verificarLocalizacao = useCallback(() => {
+  async function confirmarPresenca() {
     setStatus("loading");
+    setMsg("Obtendo sua localização...");
 
     if (!navigator.geolocation) {
-      setStatus("fora");
+      setStatus("error");
+      setMsg("Geolocalização não suportada no seu dispositivo.");
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const dist = calcDistanceMeters(
-          pos.coords.latitude,
-          pos.coords.longitude,
-          escola.lat,
-          escola.lng
-        );
+      async (pos) => {
+        const latAluno = pos.coords.latitude;
+        const lngAluno = pos.coords.longitude;
+        
+        // Se a escola não tiver lat/lng configurada no Supabase ainda, simulamos uma distância baseada no mockup
+        const latEscola = escola.lat || -23.5505;
+        const lngEscola = escola.lng || -46.6333;
+        const raio = escola.raio_metros || 100;
+
+        const dist = calcDistanceMeters(latEscola, lngEscola, latAluno, lngAluno);
         setDistancia(Math.round(dist));
-        setStatus(dist <= escola.raio_metros ? "dentro" : "fora");
+
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (dist <= raio) {
+          setStatus("success");
+          setMsg("Presença confirmada com sucesso!");
+          
+          if (user) {
+            const { data: alunoInfo } = await supabase.from("alunos").select("id").eq("user_id", user.id).single();
+            if (alunoInfo) {
+              await supabase.from("presencas").insert({
+                aluno_id: alunoInfo.id,
+                escola_id: escola.id,
+                data: new Date().toISOString().split("T")[0],
+                status: "confirmada",
+                lat_aluno: latAluno,
+                lng_aluno: lngAluno,
+                dentro_do_raio: true
+              });
+            }
+          }
+          
+          const dataHoje = new Date().toISOString().split("T")[0];
+          localStorage.setItem(`presenca_${dataHoje}`, "true");
+          setTimeout(() => setShow(false), 3000);
+        } else {
+          setStatus("error");
+          setMsg("Você está fora da escola!");
+          
+          // Registrar FALTA (não confirmou presença)
+          if (user) {
+            const { data: alunoInfo } = await supabase.from("alunos").select("id").eq("user_id", user.id).single();
+            if (alunoInfo) {
+              await supabase.from("faltas").insert({
+                aluno_id: alunoInfo.id,
+                materia: "Geral (Falta de Presença)",
+                data: new Date().toISOString().split("T")[0],
+              });
+            }
+          }
+        }
       },
-      () => {
-        // Permisso negada ou erro
-        setStatus("fora");
+      (err) => {
+        setStatus("error");
+        setMsg(err.message === "User denied Geolocation" 
+          ? "Você negou o acesso à localização." 
+          : "Não foi possível verificar sua localização.");
       },
       { enableHighAccuracy: true, timeout: 10000 }
     );
-  }, [escola]);
-
-  function confirmarPresenca() {
-    const hoje = new Date().toDateString();
-    localStorage.setItem(`presenca_${hoje}`, "confirmada");
-    setStatus("confirmada");
-    setTimeout(() => {
-      setShow(false);
-      setHojeConfirmado(true);
-    }, 2000);
   }
 
-  function salvarJustificativa() {
-    const hoje = new Date().toDateString();
-    localStorage.setItem(`presenca_${hoje}`, `justificada: ${justificativa}`);
-    setStatus("finalizado");
-    setTimeout(() => {
-      setShow(false);
-      setHojeConfirmado(true);
-    }, 2000);
-  }
-
-  function fecharSemConfirmar() {
-    const hoje = new Date().toDateString();
-    localStorage.setItem(`presenca_${hoje}`, "ausente");
-    setShow(false);
-  }
-
-  if (!show || hojeConfirmado) return null;
+  if (!show) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end justify-center">
-      {/* Overlay */}
-      <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-        onClick={fecharSemConfirmar}
-      />
+    <div className="fixed inset-0 bg-slate-900/60 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
+      <div className="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl animate-in zoom-in-95 duration-500">
+        <div className="bg-blue-600 p-6 flex flex-col items-center text-center">
+          <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-3">
+            <MapPin size={32} className="text-white" />
+          </div>
+          <h2 className="text-white font-bold text-xl">Confirmação de Presença</h2>
+          <p className="text-blue-100 text-sm mt-1">
+            São {HORA_AULA} - O período de aula iniciou! Confirme que você está na escola.
+          </p>
+        </div>
 
-      {/* Modal */}
-      <div className="relative w-full max-w-[430px] bg-white rounded-t-3xl shadow-2xl p-6 pb-8 animate-in slide-in-from-bottom-4">
-        {/* Fechar */}
-        <button
-          onClick={fecharSemConfirmar}
-          className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-slate-100 transition"
-        >
-          <X size={18} className="text-slate-400" />
-        </button>
+        <div className="p-6 flex flex-col items-center text-center bg-white">
+          {status === "idle" && (
+            <>
+              <p className="text-slate-600 text-sm mb-6">
+                Precisamos acessar o GPS do seu celular para validar se você está dentro da escola.
+              </p>
+              <button
+                onClick={confirmarPresenca}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transition"
+              >
+                Confirmar Presença Agora
+              </button>
+            </>
+          )}
 
-        {/* Estado: idle */}
-        {status === "idle" && (
-          <>
-            <div className="flex flex-col items-center text-center gap-3 mb-6">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-                <MapPin size={28} className="text-blue-600" />
-              </div>
-              <div>
-                <h2 className="font-bold text-slate-800 text-lg">Confirmar presena</h2>
-                <p className="text-slate-500 text-sm mt-1">
-                  So {escola.horario_entrada}  hora de confirmar que voc est na escola!
+          {status === "loading" && (
+            <div className="py-4 flex flex-col items-center gap-3">
+              <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+              <p className="text-slate-600 font-medium">{msg}</p>
+            </div>
+          )}
+
+          {status === "success" && (
+            <div className="py-2 flex flex-col items-center gap-3">
+              <CheckCircle size={48} className="text-green-500" />
+              <h2 className="font-bold text-green-600 text-lg">{msg}</h2>
+              {distancia !== null && (
+                <p className="text-xs text-slate-500">
+                  Distância: {distancia}m (raio: {escola.raio_metros || 100}m)
                 </p>
-              </div>
-              <div className="bg-slate-50 rounded-xl px-4 py-2 text-sm text-slate-600 w-full">
-                 {escola.nome}
-              </div>
+              )}
             </div>
-            <button
-              onClick={verificarLocalizacao}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-2"
-            >
-              <MapPin size={18} />
-              Confirmar com GPS
-            </button>
-            <button
-              onClick={() => setStatus("justificando")}
-              className="w-full mt-2 text-slate-500 text-sm py-2 hover:text-slate-700 transition"
-            >
-              Vou justificar minha falta
-            </button>
-          </>
-        )}
+          )}
 
-        {/* Estado: carregando GPS */}
-        {status === "loading" && (
-          <div className="flex flex-col items-center text-center gap-4 py-4">
-            <Loader2 size={40} className="text-blue-600 animate-spin" />
-            <p className="text-slate-600 font-medium">Verificando sua localizao...</p>
-          </div>
-        )}
-
-        {/* Estado: dentro do raio */}
-        {status === "dentro" && (
-          <div className="flex flex-col items-center text-center gap-4">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-              <CheckCircle size={32} className="text-green-600" />
+          {status === "error" && (
+            <div className="py-2 flex flex-col items-center gap-3">
+              <XCircle size={48} className="text-red-500" />
+              <h2 className="font-bold text-red-600 text-lg">Você não está na escola</h2>
+              <p className="text-slate-600 text-sm">{msg}</p>
+              <p className="text-xs text-red-500 font-bold mt-2">Uma FALTA foi registrada e precisa de justificativa com seu Tutor.</p>
+              <button
+                onClick={() => setShow(false)}
+                className="mt-4 w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl transition"
+              >
+                Fechar
+              </button>
             </div>
-            <div>
-              <h2 className="font-bold text-green-700 text-lg">Voc est na escola! </h2>
-              <p className="text-slate-500 text-sm mt-1">
-                Distncia: {distancia}m (raio: {escola.raio_metros}m)
-              </p>
-            </div>
-            <button
-              onClick={confirmarPresenca}
-              className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-xl transition"
-            >
-              Confirmar presena
-            </button>
-          </div>
-        )}
-
-        {/* Estado: fora do raio */}
-        {status === "fora" && (
-          <div className="flex flex-col items-center text-center gap-4">
-            <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center">
-              <AlertTriangle size={32} className="text-yellow-600" />
-            </div>
-            <div>
-              <h2 className="font-bold text-yellow-700 text-lg">Voc no est na escola</h2>
-              <p className="text-slate-500 text-sm mt-1">
-                {distancia !== null
-                  ? `Voc est a ${distancia}m da escola (raio: ${escola.raio_metros}m)`
-                  : "No foi possvel verificar sua localizao."}
-              </p>
-            </div>
-            <button
-              onClick={() => setStatus("justificando")}
-              className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3.5 rounded-xl transition"
-            >
-              Justificar ausncia
-            </button>
-            <button
-              onClick={fecharSemConfirmar}
-              className="w-full text-slate-400 text-sm py-1 hover:text-slate-600"
-            >
-              Fechar (registrar como ausente)
-            </button>
-          </div>
-        )}
-
-        {/* Estado: justificando */}
-        {status === "justificando" && (
-          <div className="flex flex-col gap-4">
-            <h2 className="font-bold text-slate-800 text-lg">Justificar falta</h2>
-            <textarea
-              value={justificativa}
-              onChange={(e) => setJustificativa(e.target.value)}
-              placeholder="Descreva o motivo da sua ausncia (trabalho, sade, etc.)..."
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-              rows={4}
-            />
-            <button
-              onClick={salvarJustificativa}
-              disabled={!justificativa.trim()}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl transition"
-            >
-              Enviar justificativa
-            </button>
-          </div>
-        )}
-
-        {/* Estado: confirmada */}
-        {(status === "confirmada" || status === "finalizado") && (
-          <div className="flex flex-col items-center text-center gap-4 py-4">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-              <CheckCircle size={32} className="text-green-600" />
-            </div>
-            <div>
-              <h2 className="font-bold text-green-700 text-lg">
-                {status === "confirmada" ? "Presena confirmada! " : "Justificativa enviada! "}
-              </h2>
-              <p className="text-slate-500 text-sm mt-1">
-                {status === "confirmada"
-                  ? "Sua presena foi registrada com sucesso."
-                  : "Sua justificativa foi enviada ao tutor."}
-              </p>
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

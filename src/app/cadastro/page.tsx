@@ -1,15 +1,15 @@
-﻿"use client";
-import { useState } from "react";
+"use client";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
-const TURMAS = ["1 Ano A", "1 Ano B", "1 Ano C", "1 Ano D", "1 Ano E", "2 TA", "2 TB", "2 TC", "2 TD", "2 TE", "3 TA", "3 TB", "3 TC", "3 TD", "3 TE"];
+const TURMAS = ["1º Ano A", "1º Ano B", "1º Ano C", "1º Ano D", "1º Ano E", "2º TA", "2º TB", "2º TC", "2º TD", "2º TE", "3º TA", "3º TB", "3º TC", "3º TD", "3º TE"];
 const DIAS = [
-  { key: "seg", label: "Seg" }, { key: "ter", label: "Ter" },
-  { key: "qua", label: "Qua" }, { key: "qui", label: "Qui" },
-  { key: "sex", label: "Sex" }, { key: "sab", label: "Sb" },
-  { key: "dom", label: "Dom" },
+  { key: "seg", label: "Segunda" }, { key: "ter", label: "Terça" },
+  { key: "qua", label: "Quarta" }, { key: "qui", label: "Quinta" },
+  { key: "sex", label: "Sexta" }, { key: "sab", label: "Sábado" },
+  { key: "dom", label: "Domingo" },
 ];
 
 export default function CadastroPage() {
@@ -18,15 +18,26 @@ export default function CadastroPage() {
   const [perfil, setPerfil] = useState<"aluno" | "tutor" | "gestor">("aluno");
 
   const [form, setForm] = useState({
-    nome: "", ra: "", turma: "", escola: "EE Prof. Eurpedes Simes de Paula",
+    nome: "", ra: "", turma: "", escola: "EE Prof. Eurípedes Simões de Paula", tutor_id: "",
     trabalha: true, tipoTrabalho: "Atendente",
     diasTrabalho: ["seg", "ter", "qua", "qui", "sex"] as string[],
-    horarioEntrada: "17:00", horarioSaida: "22:00",
+    horarioEntrada: "08:00", horarioSaida: "12:00",
     disciplina: "", cargo: "",
     email: "", senha: "", confirmarSenha: "",
   });
+  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [tutores, setTutores] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function carregarTutores() {
+      const supabase = createClient();
+      const { data } = await supabase.from("profiles").select("id, nome").eq("role", "tutor");
+      if (data) setTutores(data);
+    }
+    carregarTutores();
+  }, []);
 
   function toggleDia(dia: string) {
     setForm((prev) => ({
@@ -39,8 +50,9 @@ export default function CadastroPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (form.senha !== form.confirmarSenha) { setError("As senhas no coincidem."); return; }
+    if (form.senha !== form.confirmarSenha) { setError("As senhas não coincidem."); return; }
     if (form.senha.length < 6) { setError("A senha deve ter pelo menos 6 caracteres."); return; }
+    if (perfil === "aluno" && !form.tutor_id && tutores.length > 0) { setError("Selecione um tutor orientador."); return; }
     setLoading(true);
     setError("");
 
@@ -71,6 +83,7 @@ export default function CadastroPage() {
       await supabase.from("alunos").insert({
         user_id: userId,
         escola_id: escola?.id ?? null,
+        tutor_id: form.tutor_id || null,
         matricula: form.ra,
         turma: form.turma,
         trabalha: form.trabalha,
@@ -110,12 +123,12 @@ export default function CadastroPage() {
 
         {step === "perfil" && (
           <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <h2 className="text-lg font-bold text-slate-800 mb-4">Qual  o seu perfil na escola?</h2>
+            <h2 className="text-lg font-bold text-slate-800 mb-4">Qual é o seu perfil na escola?</h2>
             <div className="flex flex-col gap-3">
               {[
                 { id: "aluno", title: "Aluno(a)", desc: "Quero acompanhar minhas notas e rotina de trabalho." },
-                { id: "tutor", title: "Professor / Tutor", desc: "Quero orientar alunos e lanar acompanhamentos." },
-                { id: "gestor", title: "Diretor / Gestor", desc: "Quero ver os relatrios e indicadores da escola." }
+                { id: "tutor", title: "Professor / Tutor", desc: "Quero orientar alunos e lançar acompanhamentos." },
+                { id: "gestor", title: "Diretor / Gestor", desc: "Quero ver os relatórios e indicadores da escola." }
               ].map(p => (
                 <div key={p.id} onClick={() => setPerfil(p.id as any)}
                   className={`p-4 rounded-2xl border-2 transition cursor-pointer ${perfil === p.id ? "border-blue-600 bg-blue-50" : "border-slate-200 bg-white hover:border-slate-300"}`}>
@@ -141,18 +154,28 @@ export default function CadastroPage() {
             <div className="flex flex-col gap-1">
               <label className="text-sm font-semibold text-slate-700">Nome completo</label>
               <input value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })}
-                placeholder="Ex: Joo da Silva" required
+                placeholder="Ex: João da Silva" required
                 className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
 
             <div className="flex flex-col gap-1">
               <label className="text-sm font-semibold text-slate-700">Escola</label>
-              <input value={form.escola} onChange={(e) => setForm({ ...form, escola: e.target.value })} required
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              <input value={form.escola} disabled required
+                className="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm focus:outline-none text-slate-500" />
             </div>
 
             {perfil === "aluno" && (
               <>
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm font-semibold text-slate-700">Tutor Orientador</label>
+                  <select value={form.tutor_id} onChange={(e) => setForm({ ...form, tutor_id: e.target.value })} required={tutores.length > 0}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Selecione seu tutor</option>
+                    {tutores.map((t) => <option key={t.id} value={t.id}>Prof. {t.nome}</option>)}
+                  </select>
+                  {tutores.length === 0 && <p className="text-xs text-amber-600 mt-1">Nenhum tutor cadastrado ainda. Opcional.</p>}
+                </div>
+
                 <div className="flex flex-col gap-1">
                   <label className="text-sm font-semibold text-slate-700">RA - Registro do Aluno</label>
                   <input value={form.ra} onChange={(e) => setForm({ ...form, ra: e.target.value })}
@@ -170,12 +193,12 @@ export default function CadastroPage() {
                 </div>
 
                 <div className="flex flex-col gap-2 mt-2">
-                  <label className="text-sm font-semibold text-slate-700">Voc trabalha atualmente?</label>
+                  <label className="text-sm font-semibold text-slate-700">Você trabalha atualmente?</label>
                   <div className="flex gap-3">
                     {[true, false].map((val) => (
                       <button key={String(val)} type="button" onClick={() => setForm({ ...form, trabalha: val })}
                         className={`flex-1 py-3 rounded-xl border text-sm font-bold transition ${form.trabalha === val ? "bg-blue-600 text-white border-blue-600 shadow-md" : "bg-white text-slate-600 border-slate-200"}`}>
-                        {val ? "Sim, eu trabalho" : "No trabalho"}
+                        {val ? "Sim, eu trabalho" : "Não trabalho"}
                       </button>
                     ))}
                   </div>
@@ -209,7 +232,7 @@ export default function CadastroPage() {
                           className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                       </div>
                       <div className="flex flex-col gap-1">
-                        <label className="text-sm font-semibold text-slate-700">Sada</label>
+                        <label className="text-sm font-semibold text-slate-700">Saída</label>
                         <input type="time" value={form.horarioSaida} onChange={(e) => setForm({ ...form, horarioSaida: e.target.value })}
                           className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                       </div>
@@ -223,7 +246,7 @@ export default function CadastroPage() {
               <div className="flex flex-col gap-1">
                 <label className="text-sm font-semibold text-slate-700">Disciplina / Especialidade</label>
                 <input value={form.disciplina} onChange={(e) => setForm({ ...form, disciplina: e.target.value })}
-                  placeholder="Ex: Matemtica, Orientador Pedaggico..." required
+                  placeholder="Ex: Matemática, Orientador Pedagógico..." required
                   className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
             )}
@@ -253,7 +276,7 @@ export default function CadastroPage() {
             <div className="flex flex-col gap-1">
               <label className="text-sm font-semibold text-slate-700">Senha</label>
               <input type="password" value={form.senha} onChange={(e) => setForm({ ...form, senha: e.target.value })}
-                placeholder="Mnimo 6 caracteres" required
+                placeholder="Mínimo 6 caracteres" required
                 className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
 
@@ -282,7 +305,7 @@ export default function CadastroPage() {
           )}
           <button type="submit" disabled={loading}
             className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl transition text-base shadow-md shadow-blue-200 flex items-center justify-center gap-2">
-            {loading ? "Processando..." : step !== "conta" ? <>Prximo passo <ChevronRight size={18} /></> : "Finalizar Cadastro"}
+            {loading ? "Processando..." : step !== "conta" ? <>Próximo passo <ChevronRight size={18} /></> : "Finalizar Cadastro"}
           </button>
         </div>
       </form>
