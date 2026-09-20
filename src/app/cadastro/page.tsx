@@ -1,14 +1,14 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
-const TURMAS = ["1º Ano A", "1º Ano B", "2º Ano A", "2º Ano B", "3º Ano A", "3º Ano B"];
+const TURMAS = ["1º Ano A", "1º Ano B", "1º Ano C", "1º Ano D", "1º Ano E", "2º TA", "2º TB", "2º TC", "2º TD", "2º TE", "3º TA", "3º TB", "3º TC", "3º TD", "3º TE"];
 const DIAS = [
   { key: "seg", label: "Seg" }, { key: "ter", label: "Ter" },
   { key: "qua", label: "Qua" }, { key: "qui", label: "Qui" },
-  { key: "sex", label: "Sex" }, { key: "sab", label: "Sáb" },
+  { key: "sex", label: "Sex" }, { key: "sab", label: "SÃ¡b" },
   { key: "dom", label: "Dom" },
 ];
 
@@ -16,7 +16,7 @@ export default function CadastroPage() {
   const router = useRouter();
   const [step, setStep] = useState<"dados" | "conta">("dados");
   const [form, setForm] = useState({
-    nome: "", ra: "", turma: "", escola: "EE Prof. Eur�pedes Sim�es de Paula",
+    nome: "", ra: "", turma: "", escola: "EE Prof. Eurï¿½pedes Simï¿½es de Paula",
     trabalha: true, tipoTrabalho: "Atendente",
     diasTrabalho: ["seg", "ter", "qua", "qui", "sex"] as string[],
     horarioEntrada: "17:00", horarioSaida: "22:00",
@@ -36,7 +36,7 @@ export default function CadastroPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (form.senha !== form.confirmarSenha) { setError("As senhas não coincidem."); return; }
+    if (form.senha !== form.confirmarSenha) { setError("As senhas nÃ£o coincidem."); return; }
     if (form.senha.length < 6) { setError("A senha deve ter pelo menos 6 caracteres."); return; }
     setLoading(true);
     setError("");
@@ -61,7 +61,7 @@ export default function CadastroPage() {
     // 2. Cria profile com role=aluno
     await supabase.from("profiles").upsert({ id: userId, role: "aluno", nome: form.nome });
 
-    // 3. Busca escola padrão
+    // 3. Busca escola padrÃ£o
     const { data: escola } = await supabase.from("escolas").select("id").limit(1).single();
 
     // 4. Cria registro de aluno
@@ -89,7 +89,7 @@ export default function CadastroPage() {
         </button>
         <h1 className="font-semibold text-slate-800">Cadastro</h1>
         <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center">
-          <span className="text-xs">👤</span>
+          <span className="text-xs">ðŸ‘¤</span>
         </div>
       </header>
 
@@ -105,17 +105,17 @@ export default function CadastroPage() {
 
         {step === "dados" && (
           <>
-            <p className="text-xs text-slate-500 font-medium">ETAPA 1 — Dados escolares</p>
+            <p className="text-xs text-slate-500 font-medium">ETAPA 1 â€” Dados escolares</p>
 
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium text-slate-700">Nome completo</label>
               <input value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })}
-                placeholder="João da Silva" required
+                placeholder="JoÃ£o da Silva" required
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-slate-700">RA — Registro do Aluno</label>
+              <label className="text-sm font-medium text-slate-700">RA â€” Registro do Aluno</label>
               <input value={form.ra} onChange={(e) => setForm({ ...form, ra: e.target.value })}
                 placeholder="Ex: 2024020123" required
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
@@ -142,7 +142,7 @@ export default function CadastroPage() {
                 {[true, false].map((val) => (
                   <button key={String(val)} type="button" onClick={() => setForm({ ...form, trabalha: val })}
                     className={`flex-1 py-2.5 rounded-xl border text-sm font-semibold transition ${form.trabalha === val ? "bg-blue-600 text-white border-blue-600" : "bg-white text-slate-600 border-slate-200"}`}>
-                    {val ? "Sim" : "Não"}
+                    {val ? "Sim" : "NÃ£o"}
                   </button>
                 ))}
               </div>
@@ -153,7 +153,7 @@ export default function CadastroPage() {
                 <div className="flex flex-col gap-1">
                   <label className="text-sm font-medium text-slate-700">Tipo de trabalho</label>
                   <input value={form.tipoTrabalho} onChange={(e) => setForm({ ...form, tipoTrabalho: e.target.value })}
-                    placeholder="Ex: Atendente, Auxiliar, Estagiário..."
+                    placeholder="Ex: Atendente, Auxiliar, EstagiÃ¡rio..."
                     className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
 
@@ -176,7 +176,7 @@ export default function CadastroPage() {
                       className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <label className="text-sm font-medium text-slate-700">Saída do trabalho</label>
+                    <label className="text-sm font-medium text-slate-700">SaÃ­da do trabalho</label>
                     <input type="time" value={form.horarioSaida} onChange={(e) => setForm({ ...form, horarioSaida: e.target.value })}
                       className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                   </div>
@@ -188,7 +188,7 @@ export default function CadastroPage() {
 
         {step === "conta" && (
           <>
-            <p className="text-xs text-slate-500 font-medium">ETAPA 2 — Criar conta de acesso</p>
+            <p className="text-xs text-slate-500 font-medium">ETAPA 2 â€” Criar conta de acesso</p>
 
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium text-slate-700">E-mail</label>
@@ -200,7 +200,7 @@ export default function CadastroPage() {
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium text-slate-700">Senha</label>
               <input type="password" value={form.senha} onChange={(e) => setForm({ ...form, senha: e.target.value })}
-                placeholder="Mínimo 6 caracteres" required
+                placeholder="MÃ­nimo 6 caracteres" required
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
 
