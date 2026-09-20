@@ -15,23 +15,22 @@ export function PresencaPopup({ escola }: PresencaPopupProps) {
   const [distancia, setDistancia] = useState<number | null>(null);
   const [msg, setMsg] = useState("");
 
-  // Usar horários da apresentação
   const HORA_AULA = "14:15";
 
   useEffect(() => {
-    // Para a apresentação, vamos forçar o popup a aparecer se for a hora de entrada (14:15)
-    // Como é uma demo, podemos até deixar aparecer sempre no primeiro login do dia
-    
-    // Verifica se já confirmou hoje no localStorage (apenas para demo)
     const dataHoje = new Date().toISOString().split("T")[0];
-    const presencaHoje = localStorage.getItem(`presenca_${dataHoje}`);
+    const jaApareceuHoje = localStorage.getItem(`popup_visto_${dataHoje}`);
 
-    if (!presencaHoje) {
-      // Pequeno delay para a animação do dashboard carregar antes do popup
+    if (!jaApareceuHoje) {
       const t = setTimeout(() => setShow(true), 1500);
       return () => clearTimeout(t);
     }
   }, []);
+
+  function marcarComoVisto() {
+    const dataHoje = new Date().toISOString().split("T")[0];
+    localStorage.setItem(`popup_visto_${dataHoje}`, "true");
+  }
 
   async function confirmarPresenca() {
     setStatus("loading");
@@ -40,6 +39,7 @@ export function PresencaPopup({ escola }: PresencaPopupProps) {
     if (!navigator.geolocation) {
       setStatus("error");
       setMsg("Geolocalização não suportada no seu dispositivo.");
+      marcarComoVisto();
       return;
     }
 
@@ -48,7 +48,6 @@ export function PresencaPopup({ escola }: PresencaPopupProps) {
         const latAluno = pos.coords.latitude;
         const lngAluno = pos.coords.longitude;
         
-        // Se a escola não tiver lat/lng configurada no Supabase ainda, simulamos uma distância baseada no mockup
         const latEscola = escola.lat || -23.5505;
         const lngEscola = escola.lng || -46.6333;
         const raio = escola.raio_metros || 100;
@@ -78,14 +77,12 @@ export function PresencaPopup({ escola }: PresencaPopupProps) {
             }
           }
           
-          const dataHoje = new Date().toISOString().split("T")[0];
-          localStorage.setItem(`presenca_${dataHoje}`, "true");
+          marcarComoVisto();
           setTimeout(() => setShow(false), 3000);
         } else {
           setStatus("error");
           setMsg("Você está fora da escola!");
           
-          // Registrar FALTA (não confirmou presença)
           if (user) {
             const { data: alunoInfo } = await supabase.from("alunos").select("id").eq("user_id", user.id).single();
             if (alunoInfo) {
@@ -96,6 +93,7 @@ export function PresencaPopup({ escola }: PresencaPopupProps) {
               });
             }
           }
+          marcarComoVisto();
         }
       },
       (err) => {
@@ -103,9 +101,15 @@ export function PresencaPopup({ escola }: PresencaPopupProps) {
         setMsg(err.message === "User denied Geolocation" 
           ? "Você negou o acesso à localização." 
           : "Não foi possível verificar sua localização.");
+        marcarComoVisto();
       },
       { enableHighAccuracy: true, timeout: 10000 }
     );
+  }
+
+  function fecharPopup() {
+    marcarComoVisto();
+    setShow(false);
   }
 
   if (!show) return null;
@@ -134,6 +138,12 @@ export function PresencaPopup({ escola }: PresencaPopupProps) {
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transition"
               >
                 Confirmar Presença Agora
+              </button>
+              <button
+                onClick={fecharPopup}
+                className="w-full mt-3 bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold py-3 rounded-xl transition"
+              >
+                Agora não
               </button>
             </>
           )}
@@ -164,7 +174,7 @@ export function PresencaPopup({ escola }: PresencaPopupProps) {
               <p className="text-slate-600 text-sm">{msg}</p>
               <p className="text-xs text-red-500 font-bold mt-2">Uma FALTA foi registrada e precisa de justificativa com seu Tutor.</p>
               <button
-                onClick={() => setShow(false)}
+                onClick={fecharPopup}
                 className="mt-4 w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl transition"
               >
                 Fechar
