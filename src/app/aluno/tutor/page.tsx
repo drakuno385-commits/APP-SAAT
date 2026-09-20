@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import Link from "next/link";
 import { ChevronRight, Send, Calendar } from "lucide-react";
@@ -115,32 +115,32 @@ export default function TutorPage() {
             <span className="text-sm text-slate-500">Meu acompanhamento</span>
           </div>
           <div className="flex items-center justify-between px-4 py-3">
-            <span className="text-sm text-slate-600">Última conversa</span>
+            <span className="text-sm text-slate-600">ltima conversa</span>
             <span className="text-sm font-semibold text-slate-800">{tutor.ultima_conversa}</span>
           </div>
           <div className="flex items-center justify-between px-4 py-3">
             <span className="text-sm text-slate-600 flex items-center gap-2">
-              <Calendar size={14} /> Próximo acompanhamento
+              <Calendar size={14} /> Prximo acompanhamento
             </span>
             <span className="text-sm font-semibold text-slate-800">{tutor.proximo_acompanhamento}</span>
           </div>
           <div className="flex items-center justify-between px-4 py-3">
-            <span className="text-sm text-slate-600">Situação</span>
+            <span className="text-sm text-slate-600">Situao</span>
             <span className="text-xs bg-yellow-100 text-yellow-700 px-2.5 py-1 rounded-full font-semibold">
-              🟡 {tutor.situacao}
+               {tutor.situacao}
             </span>
           </div>
         </div>
 
-        {/* Botões */}
+        {/* Botes */}
         <button
           onClick={() => setShowChat(true)}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-2"
         >
-          💬 Conversar com tutor
+           Conversar com tutor
         </button>
         <button className="w-full border border-slate-200 text-slate-600 font-semibold py-3.5 rounded-xl hover:bg-slate-50 transition flex items-center justify-center gap-2">
-          📅 Solicitar atendimento
+           Solicitar atendimento
         </button>
       </div>
 
@@ -148,11 +148,11 @@ export default function TutorPage() {
       <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-slate-100 z-50">
         <div className="flex">
           {[
-            { href: "/aluno/dashboard", label: "Início", icon: "🏠" },
-            { href: "/aluno/faltas", label: "Faltas", icon: "📋" },
-            { href: "/aluno/atividades", label: "Atividades", icon: "📚" },
-            { href: "/aluno/tutor", label: "Tutor", icon: "👨‍🏫" },
-            { href: "/aluno/perfil", label: "Perfil", icon: "👤" },
+            { href: "/aluno/dashboard", label: "Incio", icon: "" },
+            { href: "/aluno/faltas", label: "Faltas", icon: "" },
+            { href: "/aluno/atividades", label: "Atividades", icon: "" },
+            { href: "/aluno/tutor", label: "Tutor", icon: "" },
+            { href: "/aluno/perfil", label: "Perfil", icon: "" },
           ].map((item) => (
             <Link key={item.href} href={item.href}
               className={`flex-1 flex flex-col items-center gap-1 py-3 text-xs ${

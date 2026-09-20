@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Circle, Popup } from "react-leaflet";
 import L from "leaflet";
@@ -31,7 +31,7 @@ export default function MapaEscola({ lat, lng, raio }: MapaEscolaProps) {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <Marker position={[lat, lng]}>
-        <Popup>📍 Localização da escola</Popup>
+        <Popup> Localizao da escola</Popup>
       </Marker>
       <Circle
         center={[lat, lng]}

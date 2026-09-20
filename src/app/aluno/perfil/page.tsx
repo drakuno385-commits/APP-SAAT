@@ -42,24 +42,24 @@ export default function PerfilAlunoPage() {
             J
           </div>
           <div className="text-center">
-            <p className="font-bold text-slate-800 text-lg">JoÃ£o da Silva</p>
+            <p className="font-bold text-slate-800 text-lg">Joo da Silva</p>
             <p className="text-slate-500 text-sm">RA: {userProfile.ra}</p>
-            <p className="text-slate-500 text-sm">2Âº Ano A â€” EE Professora Maria Aparecida</p>
+            <p className="text-slate-500 text-sm">2 Ano A  EE Professora Maria Aparecida</p>
           </div>
         </div>
 
         <div className="bg-slate-50 rounded-2xl divide-y divide-slate-100">
           <Link href="/aluno/rotina" className="flex items-center justify-between px-4 py-3.5 hover:bg-slate-100 transition">
-            <span className="text-sm text-slate-700">ðŸ“… Minha rotina</span>
-            <span className="text-slate-400">â€º</span>
+            <span className="text-sm text-slate-700"> Minha rotina</span>
+            <span className="text-slate-400"></span>
           </Link>
           <button className="w-full flex items-center justify-between px-4 py-3.5 hover:bg-slate-100 transition">
-            <span className="text-sm text-slate-700">ðŸ”” NotificaÃ§Ãµes</span>
-            <span className="text-slate-400">â€º</span>
+            <span className="text-sm text-slate-700"> Notificaes</span>
+            <span className="text-slate-400"></span>
           </button>
           <button className="w-full flex items-center justify-between px-4 py-3.5 hover:bg-slate-100 transition">
-            <span className="text-sm text-slate-700">ðŸ”’ Alterar senha</span>
-            <span className="text-slate-400">â€º</span>
+            <span className="text-sm text-slate-700"> Alterar senha</span>
+            <span className="text-slate-400"></span>
           </button>
         </div>
 
@@ -75,11 +75,11 @@ export default function PerfilAlunoPage() {
       <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-slate-100 z-50">
         <div className="flex">
           {[
-            { href: "/aluno/dashboard", label: "InÃ­cio", icon: "ðŸ " },
-            { href: "/aluno/faltas", label: "Faltas", icon: "ðŸ“‹" },
-            { href: "/aluno/atividades", label: "Atividades", icon: "ðŸ“š" },
-            { href: "/aluno/tutor", label: "Tutor", icon: "ðŸ‘¨â€ðŸ«" },
-            { href: "/aluno/perfil", label: "Perfil", icon: "ðŸ‘¤" },
+            { href: "/aluno/dashboard", label: "Incio", icon: "" },
+            { href: "/aluno/faltas", label: "Faltas", icon: "" },
+            { href: "/aluno/atividades", label: "Atividades", icon: "" },
+            { href: "/aluno/tutor", label: "Tutor", icon: "" },
+            { href: "/aluno/perfil", label: "Perfil", icon: "" },
           ].map((item) => (
             <Link key={item.href} href={item.href}
               className={`flex-1 flex flex-col items-center gap-1 py-3 text-xs ${

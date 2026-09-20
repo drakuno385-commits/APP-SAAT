@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import Link from "next/link";
 import { ChevronRight, Calendar, AlertTriangle } from "lucide-react";
 import { mockFaltas, getFaltasPorMateria } from "@/lib/mock-data";
@@ -28,7 +28,7 @@ export default function FaltasPage() {
           <table className="w-full">
             <thead>
               <tr className="bg-slate-50">
-                <th className="text-left text-xs font-semibold text-slate-500 px-4 py-3">Matéria</th>
+                <th className="text-left text-xs font-semibold text-slate-500 px-4 py-3">Matria</th>
                 <th className="text-right text-xs font-semibold text-slate-500 px-4 py-3">Faltas</th>
               </tr>
             </thead>
@@ -62,7 +62,7 @@ export default function FaltasPage() {
                   : "bg-green-100 text-green-700"
               }`}
             >
-              {total >= limiteAlerta ? "🔴 Alto" : total >= 2 ? "🟡 Atenção" : "🟢 Normal"}
+              {total >= limiteAlerta ? " Alto" : total >= 2 ? " Ateno" : " Normal"}
             </span>
           </div>
         </div>
@@ -72,15 +72,15 @@ export default function FaltasPage() {
           <div className="bg-yellow-50 rounded-2xl p-4 border border-yellow-200 flex gap-3">
             <AlertTriangle size={18} className="text-yellow-600 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm text-yellow-800 font-medium">Você está acumulando faltas.</p>
+              <p className="text-sm text-yellow-800 font-medium">Voc est acumulando faltas.</p>
               <p className="text-xs text-yellow-700 mt-0.5">Converse com seu tutor para organizar sua rotina.</p>
             </div>
           </div>
         )}
 
-        {/* Histórico individual */}
+        {/* Histrico individual */}
         <div>
-          <h2 className="text-sm font-semibold text-slate-700 mb-3">Histórico de faltas</h2>
+          <h2 className="text-sm font-semibold text-slate-700 mb-3">Histrico de faltas</h2>
           <div className="flex flex-col gap-2">
             {faltas.map((f) => (
               <div key={f.id} className="flex items-center justify-between bg-slate-50 rounded-xl px-4 py-3">
@@ -93,7 +93,7 @@ export default function FaltasPage() {
                 {f.justificativa ? (
                   <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">Justificada</span>
                 ) : (
-                  <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full">Não justificada</span>
+                  <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full">No justificada</span>
                 )}
               </div>
             ))}
@@ -105,11 +105,11 @@ export default function FaltasPage() {
       <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-slate-100 z-50">
         <div className="flex">
           {[
-            { href: "/aluno/dashboard", label: "Início", icon: "🏠" },
-            { href: "/aluno/faltas", label: "Faltas", icon: "📋" },
-            { href: "/aluno/atividades", label: "Atividades", icon: "📚" },
-            { href: "/aluno/tutor", label: "Tutor", icon: "👨‍🏫" },
-            { href: "/aluno/perfil", label: "Perfil", icon: "👤" },
+            { href: "/aluno/dashboard", label: "Incio", icon: "" },
+            { href: "/aluno/faltas", label: "Faltas", icon: "" },
+            { href: "/aluno/atividades", label: "Atividades", icon: "" },
+            { href: "/aluno/tutor", label: "Tutor", icon: "" },
+            { href: "/aluno/perfil", label: "Perfil", icon: "" },
           ].map((item) => (
             <Link
               key={item.href}

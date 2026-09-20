@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+﻿import { cn } from "@/lib/utils";
 
 type BadgeVariant = "normal" | "atencao" | "risco" | "default" | "pendente" | "concluida";
 
@@ -12,12 +12,12 @@ const variants: Record<BadgeVariant, string> = {
 };
 
 const icons: Record<BadgeVariant, string> = {
-  normal:   "🟢",
-  atencao:  "🟡",
-  risco:    "🔴",
+  normal:   "",
+  atencao:  "",
+  risco:    "",
   default:  "",
-  pendente: "⏳",
-  concluida:"✅",
+  pendente: "",
+  concluida:"",
 };
 
 interface BadgeProps {

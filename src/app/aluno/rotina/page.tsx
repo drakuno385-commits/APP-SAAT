@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronRight, Clock, BookOpen, Briefcase, AlertTriangle } from "lucide-react";
@@ -18,7 +18,7 @@ export default function RotinaPage() {
   const [stH, stM] = saidaTrabalho.split(":").map(Number);
   const tempoLivreInicio = `${String(stH).padStart(2, "0")}:${String(stM + 30).padStart(2, "0")}`;
   const tempoLivreFim = "23:30";
-  const tempoLivreHoras = 1; // 1h disponível
+  const tempoLivreHoras = 1; // 1h disponvel
 
   async function handleSalvar() {
     setSaved(true);
@@ -35,7 +35,7 @@ export default function RotinaPage() {
         </button>
         <h1 className="font-semibold text-slate-800">Minha rotina</h1>
         <div className="w-8 h-8 flex items-center justify-center">
-          <span className="text-xl">📅</span>
+          <span className="text-xl"></span>
         </div>
       </header>
 
@@ -54,7 +54,7 @@ export default function RotinaPage() {
               <p className="text-2xl font-bold text-slate-800">{entradaEscola}</p>
             </div>
             <div>
-              <p className="text-xs text-slate-400 mb-1">Saída</p>
+              <p className="text-xs text-slate-400 mb-1">Sada</p>
               <p className="text-2xl font-bold text-slate-800">{saidaEscola}</p>
             </div>
           </div>
@@ -75,23 +75,23 @@ export default function RotinaPage() {
                 <p className="text-2xl font-bold text-slate-800">{entradaTrabalho}</p>
               </div>
               <div>
-                <p className="text-xs text-slate-400 mb-1">Saída</p>
+                <p className="text-xs text-slate-400 mb-1">Sada</p>
                 <p className="text-2xl font-bold text-slate-800">{saidaTrabalho}</p>
               </div>
             </div>
           </div>
         )}
 
-        {/* Tempo disponível */}
+        {/* Tempo disponvel */}
         <div className="bg-blue-50 rounded-2xl p-4 border border-blue-100">
           <div className="flex items-center gap-2 mb-3">
             <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
               <Clock size={16} className="text-blue-600" />
             </div>
-            <span className="font-semibold text-slate-800">Tempo disponível para estudar</span>
+            <span className="font-semibold text-slate-800">Tempo disponvel para estudar</span>
           </div>
           <p className="text-2xl font-bold text-blue-700">
-            {tempoLivreInicio} – {tempoLivreFim}
+            {tempoLivreInicio}  {tempoLivreFim}
           </p>
         </div>
 
@@ -102,7 +102,7 @@ export default function RotinaPage() {
             <div>
               <p className="text-sm text-yellow-800 font-medium">Pouco tempo para estudar</p>
               <p className="text-xs text-yellow-700 mt-0.5">
-                Seu tempo disponível para estudo é reduzido. Seu tutor poderá ajudá-lo a organizar sua rotina.
+                Seu tempo disponvel para estudo  reduzido. Seu tutor poder ajud-lo a organizar sua rotina.
               </p>
             </div>
           </div>

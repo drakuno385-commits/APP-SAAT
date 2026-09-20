@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import Link from "next/link";
 import { Bell, Calendar, BookOpen, TrendingUp, User, AlertTriangle, CheckCircle, AlertCircle } from "lucide-react";
 import { mockAluno, mockTutor } from "@/lib/mock-data";
@@ -32,15 +32,15 @@ export default function DashboardPage() {
       bg: "bg-green-50 border-green-200",
       textColor: "text-green-800",
       descColor: "text-green-700",
-      description: "Você está em dia com seus estudos. Continue assim!",
+      description: "Voc est em dia com seus estudos. Continue assim!",
     },
     atencao: {
       icon: <AlertTriangle size={16} className="text-yellow-600" />,
-      label: "Atenção",
+      label: "Ateno",
       bg: "bg-yellow-50 border-yellow-200",
       textColor: "text-yellow-800",
       descColor: "text-yellow-700",
-      description: "Identificamos algumas dificuldades na conciliação entre trabalho e escola. Converse com seu tutor.",
+      description: "Identificamos algumas dificuldades na conciliao entre trabalho e escola. Converse com seu tutor.",
     },
     risco: {
       icon: <AlertCircle size={16} className="text-red-600" />,
@@ -48,13 +48,13 @@ export default function DashboardPage() {
       bg: "bg-red-50 border-red-200",
       textColor: "text-red-800",
       descColor: "text-red-700",
-      description: "Atenção! Você está em risco de reprovação. Procure seu tutor imediatamente.",
+      description: "Ateno! Voc est em risco de reprovao. Procure seu tutor imediatamente.",
     },
   }[situacao];
 
   return (
     <div className="app-shell min-h-screen bg-white">
-      {/* Pop-up de presença */}
+      {/* Pop-up de presena */}
       <PresencaPopup escola={aluno.escola!} />
 
       {/* Header */}
@@ -62,7 +62,7 @@ export default function DashboardPage() {
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-white text-2xl font-bold">
-              Ol�, {nome}! 👋
+              Ol, {nome}! 
             </h1>
             <p className="text-blue-200 text-sm mt-1">Seu acompanhamento</p>
           </div>
@@ -127,12 +127,12 @@ export default function DashboardPage() {
           </Link>
         </div>
 
-        {/* Situação atual */}
+        {/* Situao atual */}
         <div className={`rounded-2xl p-4 border mb-4 ${situacaoConfig.bg}`}>
           <div className="flex items-center gap-2 mb-1">
             {situacaoConfig.icon}
             <span className={`text-sm font-bold ${situacaoConfig.textColor}`}>
-              Situação atual: {situacaoConfig.label}
+              Situao atual: {situacaoConfig.label}
             </span>
           </div>
           <p className={`text-xs ${situacaoConfig.descColor}`}>
@@ -140,7 +140,7 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* Ações */}
+        {/* Aes */}
         <div className="grid grid-cols-2 gap-3 mb-8">
           <Link href="/aluno/atividades">
             <button className="w-full border border-blue-600 text-blue-600 font-semibold py-3 rounded-xl text-sm hover:bg-blue-50 transition">
@@ -159,11 +159,11 @@ export default function DashboardPage() {
       <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-slate-100 z-50">
         <div className="flex">
           {[
-            { href: "/aluno/dashboard", label: "Início", icon: "🏠" },
-            { href: "/aluno/faltas", label: "Faltas", icon: "📋" },
-            { href: "/aluno/atividades", label: "Atividades", icon: "📚" },
-            { href: "/aluno/tutor", label: "Tutor", icon: "👨‍🏫" },
-            { href: "/aluno/perfil", label: "Perfil", icon: "👤" },
+            { href: "/aluno/dashboard", label: "Incio", icon: "" },
+            { href: "/aluno/faltas", label: "Faltas", icon: "" },
+            { href: "/aluno/atividades", label: "Atividades", icon: "" },
+            { href: "/aluno/tutor", label: "Tutor", icon: "" },
+            { href: "/aluno/perfil", label: "Perfil", icon: "" },
           ].map((item) => (
             <Link
               key={item.href}

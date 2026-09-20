@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -27,7 +27,7 @@ export default function LoginPage() {
       return;
     }
 
-    // Busca o role do usuário
+    // Busca o role do usurio
     const { data: profile } = await supabase
       .from("profiles")
       .select("role")
@@ -46,7 +46,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="flex flex-col items-center gap-3 mb-10">
           <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center shadow-xl">
-            <span className="text-4xl">🎓</span>
+            <span className="text-4xl"></span>
           </div>
           <div className="text-center">
             <h1 className="text-white text-4xl font-black tracking-tight">SAAT</h1>
@@ -77,7 +77,7 @@ export default function LoginPage() {
                 type="password"
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
-                placeholder="••••••••"
+                placeholder=""
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                 required
               />
@@ -117,7 +117,7 @@ export default function LoginPage() {
 
       <div className="pb-8 px-6 text-center">
         <p className="text-blue-200 text-sm font-medium">
-          Seu estudo, seu trabalho, seu futuro. ✨
+          Seu estudo, seu trabalho, seu futuro. 
         </p>
       </div>
     </div>

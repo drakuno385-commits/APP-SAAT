@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import Link from "next/link";
 import { Search } from "lucide-react";
 import { mockAlunosTutor } from "@/lib/mock-data";
@@ -16,11 +16,11 @@ function AlunoCard({ aluno }: { aluno: Aluno }) {
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-slate-800 truncate">{aluno.profile?.nome}</p>
-          <p className="text-xs text-slate-400">{aluno.turma} · RA: {aluno.ra}</p>
+          <p className="text-xs text-slate-400">{aluno.turma}  RA: {aluno.ra}</p>
           <div className="flex gap-3 mt-1 text-xs text-slate-500">
             <span>Faltas: <b className="text-slate-700">{aluno.faltas_total}</b></span>
             <span>Pendentes: <b className="text-slate-700">{aluno.atividades_pendentes}</b></span>
-            <span>Média: <b className="text-slate-700">{aluno.media?.toFixed(1)}</b></span>
+            <span>Mdia: <b className="text-slate-700">{aluno.media?.toFixed(1)}</b></span>
           </div>
         </div>
         <span className="text-xs font-semibold px-2.5 py-1 rounded-full flex-shrink-0"
@@ -65,7 +65,7 @@ export default function TutorAlunosPage() {
               className={`px-3 py-1.5 rounded-full text-xs font-semibold transition ${
                 filtro === f ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600"
               }`}>
-              {f === "todos" ? "Todos" : f === "risco" ? "🔴 Risco" : f === "atencao" ? "🟡 Atenção" : "🟢 Normal"}
+              {f === "todos" ? "Todos" : f === "risco" ? " Risco" : f === "atencao" ? " Ateno" : " Normal"}
             </button>
           ))}
         </div>
@@ -76,7 +76,7 @@ export default function TutorAlunosPage() {
         {alunos.map((a) => <AlunoCard key={a.id} aluno={a} />)}
         {alunos.length === 0 && (
           <div className="text-center py-12 text-slate-400">
-            <p className="text-2xl mb-2">🔍</p>
+            <p className="text-2xl mb-2"></p>
             <p className="text-sm">Nenhum aluno encontrado</p>
           </div>
         )}
@@ -85,10 +85,10 @@ export default function TutorAlunosPage() {
       <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-slate-100 z-50">
         <div className="flex">
           {[
-            { href: "/tutor/painel", label: "Painel", icon: "🏠" },
-            { href: "/tutor/alunos", label: "Alunos", icon: "👥" },
-            { href: "/tutor/chat", label: "Mensagens", icon: "💬" },
-            { href: "/tutor/perfil", label: "Perfil", icon: "👤" },
+            { href: "/tutor/painel", label: "Painel", icon: "" },
+            { href: "/tutor/alunos", label: "Alunos", icon: "" },
+            { href: "/tutor/chat", label: "Mensagens", icon: "" },
+            { href: "/tutor/perfil", label: "Perfil", icon: "" },
           ].map((item) => (
             <Link key={item.href} href={item.href}
               className={`flex-1 flex flex-col items-center gap-1 py-3 text-xs ${item.href === "/tutor/alunos" ? "text-blue-600" : "text-slate-400"}`}>

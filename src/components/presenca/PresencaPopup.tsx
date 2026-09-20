@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect, useCallback } from "react";
 import { MapPin, CheckCircle, AlertTriangle, X, Loader2 } from "lucide-react";
 import { calcDistanceMeters } from "@/lib/utils";
@@ -17,7 +17,7 @@ export function PresencaPopup({ escola }: PresencaPopupProps) {
   const [justificativa, setJustificativa] = useState("");
   const [hojeConfirmado, setHojeConfirmado] = useState(false);
 
-  // Verifica se está no horário de entrada (±15 minutos)
+  // Verifica se est no horrio de entrada (15 minutos)
   const isHorarioEntrada = useCallback(() => {
     const now = new Date();
     const [hh, mm] = escola.horario_entrada.split(":").map(Number);
@@ -27,7 +27,7 @@ export function PresencaPopup({ escola }: PresencaPopupProps) {
   }, [escola.horario_entrada]);
 
   useEffect(() => {
-    // Checa se já confirmou hoje
+    // Checa se j confirmou hoje
     const hoje = new Date().toDateString();
     const confirmadoHoje = localStorage.getItem(`presenca_${hoje}`);
     if (confirmadoHoje) {
@@ -35,8 +35,8 @@ export function PresencaPopup({ escola }: PresencaPopupProps) {
       return;
     }
 
-    // Em produção, verificar o horário real; no demo, mostra sempre para testar
-    // Descomente para verificar horário real: if (!isHorarioEntrada()) return;
+    // Em produo, verificar o horrio real; no demo, mostra sempre para testar
+    // Descomente para verificar horrio real: if (!isHorarioEntrada()) return;
     const timer = setTimeout(() => setShow(true), 1500);
     return () => clearTimeout(timer);
   }, [isHorarioEntrada]);
@@ -61,7 +61,7 @@ export function PresencaPopup({ escola }: PresencaPopupProps) {
         setStatus(dist <= escola.raio_metros ? "dentro" : "fora");
       },
       () => {
-        // Permissão negada ou erro
+        // Permisso negada ou erro
         setStatus("fora");
       },
       { enableHighAccuracy: true, timeout: 10000 }
@@ -122,13 +122,13 @@ export function PresencaPopup({ escola }: PresencaPopupProps) {
                 <MapPin size={28} className="text-blue-600" />
               </div>
               <div>
-                <h2 className="font-bold text-slate-800 text-lg">Confirmar presença</h2>
+                <h2 className="font-bold text-slate-800 text-lg">Confirmar presena</h2>
                 <p className="text-slate-500 text-sm mt-1">
-                  São {escola.horario_entrada} — hora de confirmar que você está na escola!
+                  So {escola.horario_entrada}  hora de confirmar que voc est na escola!
                 </p>
               </div>
               <div className="bg-slate-50 rounded-xl px-4 py-2 text-sm text-slate-600 w-full">
-                📍 {escola.nome}
+                 {escola.nome}
               </div>
             </div>
             <button
@@ -151,7 +151,7 @@ export function PresencaPopup({ escola }: PresencaPopupProps) {
         {status === "loading" && (
           <div className="flex flex-col items-center text-center gap-4 py-4">
             <Loader2 size={40} className="text-blue-600 animate-spin" />
-            <p className="text-slate-600 font-medium">Verificando sua localização...</p>
+            <p className="text-slate-600 font-medium">Verificando sua localizao...</p>
           </div>
         )}
 
@@ -162,16 +162,16 @@ export function PresencaPopup({ escola }: PresencaPopupProps) {
               <CheckCircle size={32} className="text-green-600" />
             </div>
             <div>
-              <h2 className="font-bold text-green-700 text-lg">Você está na escola! ✅</h2>
+              <h2 className="font-bold text-green-700 text-lg">Voc est na escola! </h2>
               <p className="text-slate-500 text-sm mt-1">
-                Distância: {distancia}m (raio: {escola.raio_metros}m)
+                Distncia: {distancia}m (raio: {escola.raio_metros}m)
               </p>
             </div>
             <button
               onClick={confirmarPresenca}
               className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-xl transition"
             >
-              Confirmar presença
+              Confirmar presena
             </button>
           </div>
         )}
@@ -183,18 +183,18 @@ export function PresencaPopup({ escola }: PresencaPopupProps) {
               <AlertTriangle size={32} className="text-yellow-600" />
             </div>
             <div>
-              <h2 className="font-bold text-yellow-700 text-lg">Você não está na escola</h2>
+              <h2 className="font-bold text-yellow-700 text-lg">Voc no est na escola</h2>
               <p className="text-slate-500 text-sm mt-1">
                 {distancia !== null
-                  ? `Você está a ${distancia}m da escola (raio: ${escola.raio_metros}m)`
-                  : "Não foi possível verificar sua localização."}
+                  ? `Voc est a ${distancia}m da escola (raio: ${escola.raio_metros}m)`
+                  : "No foi possvel verificar sua localizao."}
               </p>
             </div>
             <button
               onClick={() => setStatus("justificando")}
               className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3.5 rounded-xl transition"
             >
-              Justificar ausência
+              Justificar ausncia
             </button>
             <button
               onClick={fecharSemConfirmar}
@@ -212,7 +212,7 @@ export function PresencaPopup({ escola }: PresencaPopupProps) {
             <textarea
               value={justificativa}
               onChange={(e) => setJustificativa(e.target.value)}
-              placeholder="Descreva o motivo da sua ausência (trabalho, saúde, etc.)..."
+              placeholder="Descreva o motivo da sua ausncia (trabalho, sade, etc.)..."
               className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
               rows={4}
             />
@@ -234,11 +234,11 @@ export function PresencaPopup({ escola }: PresencaPopupProps) {
             </div>
             <div>
               <h2 className="font-bold text-green-700 text-lg">
-                {status === "confirmada" ? "Presença confirmada! 🎉" : "Justificativa enviada! 📝"}
+                {status === "confirmada" ? "Presena confirmada! " : "Justificativa enviada! "}
               </h2>
               <p className="text-slate-500 text-sm mt-1">
                 {status === "confirmada"
-                  ? "Sua presença foi registrada com sucesso."
+                  ? "Sua presena foi registrada com sucesso."
                   : "Sua justificativa foi enviada ao tutor."}
               </p>
             </div>

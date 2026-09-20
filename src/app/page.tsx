@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -18,7 +18,7 @@ export default function HomePage() {
     <div className="app-shell flex items-center justify-center min-h-screen">
       <div className="flex flex-col items-center gap-4">
         <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
-          <span className="text-3xl">🎓</span>
+          <span className="text-3xl"></span>
         </div>
         <p className="text-slate-500 text-sm">Carregando...</p>
       </div>

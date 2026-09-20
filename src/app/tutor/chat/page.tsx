@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import Link from "next/link";
 import { Send } from "lucide-react";
@@ -28,11 +28,11 @@ export default function TutorChatPage() {
     return (
       <div className="app-shell min-h-screen bg-slate-50 flex flex-col">
         <header className="flex items-center gap-3 px-4 py-4 bg-white border-b border-slate-100 sticky top-0 z-40">
-          <button onClick={() => setAlunoAtivo(null)} className="p-1 rounded-full hover:bg-slate-100 text-slate-600 text-xl">←</button>
+          <button onClick={() => setAlunoAtivo(null)} className="p-1 rounded-full hover:bg-slate-100 text-slate-600 text-xl"></button>
           <div className="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center font-bold text-blue-700">{aluno.profile?.nome[0]}</div>
           <div>
             <p className="text-sm font-semibold text-slate-800">{aluno.profile?.nome}</p>
-            <p className="text-xs text-slate-400">{aluno.turma} · RA: {aluno.ra}</p>
+            <p className="text-xs text-slate-400">{aluno.turma}  RA: {aluno.ra}</p>
           </div>
         </header>
 
@@ -79,7 +79,7 @@ export default function TutorChatPage() {
             <div className="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-700 flex-shrink-0">{a.profile?.nome[0]}</div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-slate-800">{a.profile?.nome}</p>
-              <p className="text-xs text-slate-400 truncate">{a.turma} · RA: {a.ra}</p>
+              <p className="text-xs text-slate-400 truncate">{a.turma}  RA: {a.ra}</p>
             </div>
             <div className="w-2 h-2 rounded-full bg-blue-600 flex-shrink-0" />
           </button>
@@ -89,10 +89,10 @@ export default function TutorChatPage() {
       <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-slate-100 z-50">
         <div className="flex">
           {[
-            { href: "/tutor/painel", label: "Painel", icon: "🏠" },
-            { href: "/tutor/alunos", label: "Alunos", icon: "👥" },
-            { href: "/tutor/chat", label: "Mensagens", icon: "💬" },
-            { href: "/tutor/perfil", label: "Perfil", icon: "👤" },
+            { href: "/tutor/painel", label: "Painel", icon: "" },
+            { href: "/tutor/alunos", label: "Alunos", icon: "" },
+            { href: "/tutor/chat", label: "Mensagens", icon: "" },
+            { href: "/tutor/perfil", label: "Perfil", icon: "" },
           ].map((item) => (
             <Link key={item.href} href={item.href}
               className={`flex-1 flex flex-col items-center gap-1 py-3 text-xs ${item.href === "/tutor/chat" ? "text-blue-600" : "text-slate-400"}`}>

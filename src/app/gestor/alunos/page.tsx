@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import Link from "next/link";
 import { Search } from "lucide-react";
 import { useState } from "react";
@@ -15,11 +15,11 @@ function AlunoCard({ aluno }: { aluno: Aluno }) {
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-slate-800 truncate">{aluno.profile?.nome}</p>
-        <p className="text-xs text-slate-400">{aluno.turma} · RA: {aluno.ra}</p>
+        <p className="text-xs text-slate-400">{aluno.turma}  RA: {aluno.ra}</p>
         <div className="flex gap-3 mt-1 text-xs text-slate-500">
           <span>Faltas: <b>{aluno.faltas_total}</b></span>
-          <span>Média: <b>{aluno.media?.toFixed(1)}</b></span>
-          <span>{aluno.trabalha ? "💼 Trabalha" : "📚 Só estuda"}</span>
+          <span>Mdia: <b>{aluno.media?.toFixed(1)}</b></span>
+          <span>{aluno.trabalha ? " Trabalha" : " S estuda"}</span>
         </div>
       </div>
       <span className="text-xs font-semibold px-2 py-1 rounded-full flex-shrink-0"
@@ -47,11 +47,11 @@ export default function GestorAlunosPage() {
       <header className="bg-white px-4 pt-5 pb-3 border-b border-slate-100 sticky top-0 z-40">
         <h1 className="font-semibold text-slate-800 mb-3">Alunos Trabalhadores</h1>
 
-        {/* Resumo rápido */}
+        {/* Resumo rpido */}
         <div className="flex gap-2 mb-3">
           {[
             { label: `${risco} Risco`, color: "bg-red-100 text-red-700", key: "risco" },
-            { label: `${atencao} Atenção`, color: "bg-yellow-100 text-yellow-700", key: "atencao" },
+            { label: `${atencao} Ateno`, color: "bg-yellow-100 text-yellow-700", key: "atencao" },
             { label: `${normal} Normal`, color: "bg-green-100 text-green-700", key: "normal" },
           ].map((f) => (
             <button key={f.key} onClick={() => setFiltro(filtro === f.key as typeof filtro ? "todos" : f.key as typeof filtro)}
@@ -75,7 +75,7 @@ export default function GestorAlunosPage() {
         {alunos.map((a) => <AlunoCard key={a.id} aluno={a} />)}
         {alunos.length === 0 && (
           <div className="text-center py-12 text-slate-400">
-            <p className="text-2xl mb-2">🔍</p>
+            <p className="text-2xl mb-2"></p>
             <p className="text-sm">Nenhum aluno encontrado</p>
           </div>
         )}
@@ -84,10 +84,10 @@ export default function GestorAlunosPage() {
       <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-slate-100 z-50">
         <div className="flex">
           {[
-            { href: "/gestor/relatorios", label: "Relatórios", icon: "📊" },
-            { href: "/gestor/alunos", label: "Alunos", icon: "👥" },
-            { href: "/gestor/escola", label: "Escola", icon: "🏫" },
-            { href: "/gestor/perfil", label: "Perfil", icon: "👤" },
+            { href: "/gestor/relatorios", label: "Relatrios", icon: "" },
+            { href: "/gestor/alunos", label: "Alunos", icon: "" },
+            { href: "/gestor/escola", label: "Escola", icon: "" },
+            { href: "/gestor/perfil", label: "Perfil", icon: "" },
           ].map((item) => (
             <Link key={item.href} href={item.href}
               className={`flex-1 flex flex-col items-center gap-1 py-3 text-xs ${item.href === "/gestor/alunos" ? "text-blue-600" : "text-slate-400"}`}>

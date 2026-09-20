@@ -1,15 +1,15 @@
-"use client";
+﻿"use client";
 import Link from "next/link";
 import { ChevronRight, ExternalLink } from "lucide-react";
 import { mockAtividades } from "@/lib/mock-data";
 
 const MATERIA_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
-  "Matemática": { bg: "bg-red-50", text: "text-red-700", dot: "bg-red-500" },
-  "Português":  { bg: "bg-blue-50", text: "text-blue-700", dot: "bg-blue-500" },
-  "História":   { bg: "bg-green-50", text: "text-green-700", dot: "bg-green-500" },
-  "Ciências":   { bg: "bg-purple-50", text: "text-purple-700", dot: "bg-purple-500" },
+  "Matemtica": { bg: "bg-red-50", text: "text-red-700", dot: "bg-red-500" },
+  "Portugus":  { bg: "bg-blue-50", text: "text-blue-700", dot: "bg-blue-500" },
+  "Histria":   { bg: "bg-green-50", text: "text-green-700", dot: "bg-green-500" },
+  "Cincias":   { bg: "bg-purple-50", text: "text-purple-700", dot: "bg-purple-500" },
   "Geografia":  { bg: "bg-yellow-50", text: "text-yellow-700", dot: "bg-yellow-500" },
-  "Inglês":     { bg: "bg-orange-50", text: "text-orange-700", dot: "bg-orange-500" },
+  "Ingls":     { bg: "bg-orange-50", text: "text-orange-700", dot: "bg-orange-500" },
 };
 
 export default function AtividadesPage() {
@@ -23,7 +23,7 @@ export default function AtividadesPage() {
         <Link href="/aluno/dashboard" className="p-1 rounded-full hover:bg-slate-100">
           <ChevronRight size={20} className="text-slate-600 rotate-180" />
         </Link>
-        <h1 className="font-semibold text-slate-800">Conteúdos pendentes</h1>
+        <h1 className="font-semibold text-slate-800">Contedos pendentes</h1>
         <span className="text-xs bg-orange-100 text-orange-700 px-2.5 py-1 rounded-full font-semibold">
           {pendentes.length} pendentes
         </span>
@@ -49,12 +49,12 @@ export default function AtividadesPage() {
                         rel="noopener noreferrer"
                         className="flex items-center gap-1 text-xs text-blue-600 font-medium hover:underline flex-shrink-0"
                       >
-                        Ver conteúdo <ExternalLink size={12} />
+                        Ver contedo <ExternalLink size={12} />
                       </a>
                     )}
                     {!a.conteudo_url && (
                       <button className="text-xs text-blue-600 font-medium hover:underline flex-shrink-0">
-                        Ver conteúdo
+                        Ver contedo
                       </button>
                     )}
                   </div>
@@ -63,7 +63,7 @@ export default function AtividadesPage() {
                     Data: {new Date(a.data).toLocaleDateString("pt-BR")}
                   </p>
                   <div className="ml-4 mt-2 flex items-center gap-1.5">
-                    <span className="text-red-500 text-xs">✕</span>
+                    <span className="text-red-500 text-xs"></span>
                     <span className="text-xs text-red-600 font-semibold">Pendente</span>
                   </div>
                 </div>
@@ -72,10 +72,10 @@ export default function AtividadesPage() {
           </div>
         )}
 
-        {/* Concluídas */}
+        {/* Concludas */}
         {concluidas.length > 0 && (
           <>
-            <h2 className="text-sm font-semibold text-slate-500 mt-2">Concluídas</h2>
+            <h2 className="text-sm font-semibold text-slate-500 mt-2">Concludas</h2>
             {concluidas.map((a) => {
               const colors = MATERIA_COLORS[a.materia] ?? { bg: "bg-slate-50", text: "text-slate-600", dot: "bg-slate-400" };
               return (
@@ -86,8 +86,8 @@ export default function AtividadesPage() {
                   </div>
                   <p className="text-sm text-slate-600 ml-4">{a.tipo}</p>
                   <div className="ml-4 mt-2 flex items-center gap-1.5">
-                    <span className="text-green-500 text-xs">✓</span>
-                    <span className="text-xs text-green-600 font-semibold">Concluída</span>
+                    <span className="text-green-500 text-xs"></span>
+                    <span className="text-xs text-green-600 font-semibold">Concluda</span>
                   </div>
                 </div>
               );
@@ -100,11 +100,11 @@ export default function AtividadesPage() {
       <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-slate-100 z-50">
         <div className="flex">
           {[
-            { href: "/aluno/dashboard", label: "Início", icon: "🏠" },
-            { href: "/aluno/faltas", label: "Faltas", icon: "📋" },
-            { href: "/aluno/atividades", label: "Atividades", icon: "📚" },
-            { href: "/aluno/tutor", label: "Tutor", icon: "👨‍🏫" },
-            { href: "/aluno/perfil", label: "Perfil", icon: "👤" },
+            { href: "/aluno/dashboard", label: "Incio", icon: "" },
+            { href: "/aluno/faltas", label: "Faltas", icon: "" },
+            { href: "/aluno/atividades", label: "Atividades", icon: "" },
+            { href: "/aluno/tutor", label: "Tutor", icon: "" },
+            { href: "/aluno/perfil", label: "Perfil", icon: "" },
           ].map((item) => (
             <Link key={item.href} href={item.href}
               className={`flex-1 flex flex-col items-center gap-1 py-3 text-xs ${

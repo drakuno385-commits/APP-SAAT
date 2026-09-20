@@ -1,16 +1,16 @@
-"use client";
+﻿"use client";
 import Link from "next/link";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 
 const DISTRIBUICAO = [
   { name: "Normal", value: 20, color: "#16a34a" },
-  { name: "Atenção", value: 19, color: "#d97706" },
+  { name: "Ateno", value: 19, color: "#d97706" },
   { name: "Risco", value: 6, color: "#dc2626" },
 ];
 
 const DIFICULDADES = [
   { desc: "Falta de tempo para estudar", qtd: 35 },
-  { desc: "Cansaço", qtd: 28 },
+  { desc: "Cansao", qtd: 28 },
   { desc: "Conflito entre trabalho e escola", qtd: 20 },
   { desc: "Faltas", qtd: 18 },
   { desc: "Atividades acumuladas", qtd: 15 },
@@ -26,8 +26,8 @@ export default function RelatoriosPage() {
         <h1 className="font-semibold text-slate-800">Painel da escola</h1>
         <div className="flex items-center gap-2">
           <select className="text-xs border border-slate-200 rounded-xl px-3 py-1.5 bg-white text-slate-600 focus:outline-none">
-            <option>Este mês</option>
-            <option>Último mês</option>
+            <option>Este ms</option>
+            <option>ltimo ms</option>
             <option>Este ano</option>
           </select>
         </div>
@@ -36,14 +36,14 @@ export default function RelatoriosPage() {
       <div className="px-4 py-5 flex flex-col gap-5 pb-24">
         {/* Total */}
         <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm text-center">
-          <p className="text-xs text-slate-500 font-medium mb-1">Situação dos alunos trabalhadores</p>
+          <p className="text-xs text-slate-500 font-medium mb-1">Situao dos alunos trabalhadores</p>
           <p className="text-5xl font-black text-slate-800">{TOTAL}</p>
           <p className="text-sm text-slate-500 mt-1">alunos trabalhadores</p>
         </div>
 
-        {/* Gráfico de rosca */}
+        {/* Grfico de rosca */}
         <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
-          <p className="text-sm font-semibold text-slate-700 mb-3">Distribuição por situação</p>
+          <p className="text-sm font-semibold text-slate-700 mb-3">Distribuio por situao</p>
           <ResponsiveContainer width="100%" height={220}>
             <PieChart>
               <Pie
@@ -112,9 +112,9 @@ export default function RelatoriosPage() {
           <div className="bg-blue-50 rounded-2xl p-4 border border-blue-100 flex items-center justify-between hover:shadow-md transition">
             <div>
               <p className="text-sm font-semibold text-blue-800">Configurar escola</p>
-              <p className="text-xs text-blue-600 mt-0.5">Geolocalização e horários</p>
+              <p className="text-xs text-blue-600 mt-0.5">Geolocalizao e horrios</p>
             </div>
-            <span className="text-2xl">📍</span>
+            <span className="text-2xl"></span>
           </div>
         </Link>
       </div>
@@ -123,10 +123,10 @@ export default function RelatoriosPage() {
       <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-slate-100 z-50">
         <div className="flex">
           {[
-            { href: "/gestor/relatorios", label: "Relatórios", icon: "📊" },
-            { href: "/gestor/alunos", label: "Alunos", icon: "👥" },
-            { href: "/gestor/escola", label: "Escola", icon: "🏫" },
-            { href: "/gestor/perfil", label: "Perfil", icon: "👤" },
+            { href: "/gestor/relatorios", label: "Relatrios", icon: "" },
+            { href: "/gestor/alunos", label: "Alunos", icon: "" },
+            { href: "/gestor/escola", label: "Escola", icon: "" },
+            { href: "/gestor/perfil", label: "Perfil", icon: "" },
           ].map((item) => (
             <Link key={item.href} href={item.href}
               className={`flex-1 flex flex-col items-center gap-1 py-3 text-xs ${

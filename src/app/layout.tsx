@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from "next";
+﻿import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
@@ -8,7 +8,7 @@ const InterSans = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "SAAT — Sistema de Acompanhamento do Aluno Trabalhador",
+  title: "SAAT  Sistema de Acompanhamento do Aluno Trabalhador",
   description: "Acompanhe seu desempenho escolar e concilie trabalho e estudo.",
   manifest: "/manifest.json",
 };

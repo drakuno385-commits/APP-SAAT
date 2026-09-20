@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { mockAlunosTutor } from "@/lib/mock-data";
@@ -32,10 +32,10 @@ function AlunoCard({ aluno }: { aluno: Aluno }) {
           <div className="flex items-center gap-3 mt-1 text-xs text-slate-500">
             <span>Faltas: <b>{aluno.faltas_total}</b></span>
             <span>Atrasos: <b>0</b></span>
-            <span>Média: <b>{aluno.media?.toFixed(1)}</b></span>
+            <span>Mdia: <b>{aluno.media?.toFixed(1)}</b></span>
           </div>
         </div>
-        {/* Situação */}
+        {/* Situao */}
         <div className="flex flex-col items-end gap-2">
           <SituacaoBadge situacao={aluno.situacao ?? "normal"} />
           <ChevronRight size={14} className="text-slate-300" />
@@ -56,7 +56,7 @@ export default function TutorPainelPage() {
       {/* Header */}
       <header className="bg-white px-4 py-4 border-b border-slate-100 flex items-center justify-between sticky top-0 z-40">
         <button className="p-2 rounded-full hover:bg-slate-100">
-          <span className="text-slate-600">☰</span>
+          <span className="text-slate-600"></span>
         </button>
         <h1 className="font-semibold text-slate-800">Painel do Tutor</h1>
         <div className="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center font-bold text-blue-700 text-sm">
@@ -73,7 +73,7 @@ export default function TutorPainelPage() {
           </div>
           <div className="bg-yellow-50 rounded-2xl p-3 border border-yellow-100 text-center">
             <p className="text-3xl font-black text-yellow-600">{atencao}</p>
-            <p className="text-xs text-yellow-500 font-medium mt-1">em atenção</p>
+            <p className="text-xs text-yellow-500 font-medium mt-1">em ateno</p>
           </div>
           <div className="bg-green-50 rounded-2xl p-3 border border-green-100 text-center">
             <p className="text-3xl font-black text-green-600">{normal}</p>
@@ -102,10 +102,10 @@ export default function TutorPainelPage() {
       <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-slate-100 z-50">
         <div className="flex">
           {[
-            { href: "/tutor/painel", label: "Painel", icon: "🏠" },
-            { href: "/tutor/alunos", label: "Alunos", icon: "👥" },
-            { href: "/tutor/chat", label: "Mensagens", icon: "💬" },
-            { href: "/tutor/perfil", label: "Perfil", icon: "👤" },
+            { href: "/tutor/painel", label: "Painel", icon: "" },
+            { href: "/tutor/alunos", label: "Alunos", icon: "" },
+            { href: "/tutor/chat", label: "Mensagens", icon: "" },
+            { href: "/tutor/perfil", label: "Perfil", icon: "" },
           ].map((item) => (
             <Link key={item.href} href={item.href}
               className={`flex-1 flex flex-col items-center gap-1 py-3 text-xs ${
