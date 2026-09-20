@@ -80,7 +80,7 @@ export default function CadastroPage() {
       let escola = null; try { const { data } = await supabase.from("escolas").select("id").limit(1).single(); escola = data; } catch(e) {}
 
       // 4. Cria aluno
-      await supabase.from("alunos").insert({
+      const { error: errAluno } = await supabase.from("alunos").insert({
         user_id: userId,
         escola_id: escola?.id ?? null,
         /* tutor_id removido do cadastro */
