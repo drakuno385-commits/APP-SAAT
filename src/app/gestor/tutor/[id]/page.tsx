@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ChevronLeft, Search } from "lucide-react";
@@ -54,7 +54,7 @@ export default function DetalhesTutorPage({ params }: { params: { id: string } }
       `).eq("tutor_id", params.id).eq("tutor_status", "aprovado");
 
       if (alunosDB) {
-        const processados = alunosDB.map(a => {
+        const processados = alunosDB.map((a: any) => {
           const faltasCount = a.faltas?.[0]?.count || 0;
           let soma = 0; let qtd = 0;
           if(a.notas) {
@@ -86,9 +86,9 @@ export default function DetalhesTutorPage({ params }: { params: { id: string } }
   if (loading) return <div className="p-8 text-center text-slate-500 text-sm">Carregando dados do tutor...</div>;
   if (!tutor) return <div className="p-8 text-center text-red-500 font-bold">Tutor não encontrado.</div>;
 
-  const riscoCount = alunos.filter(a => a.status === "risco").length;
-  const atencaoCount = alunos.filter(a => a.status === "atencao").length;
-  const normalCount = alunos.filter(a => a.status === "normal").length;
+  const riscoCount = alunos.filter((a: any) => a.status === "risco").length;
+  const atencaoCount = alunos.filter((a: any) => a.status === "atencao").length;
+  const normalCount = alunos.filter((a: any) => a.status === "normal").length;
 
   const alunosFiltrados = alunos
     .filter(a => filtro === "todos" || a.status === filtro)

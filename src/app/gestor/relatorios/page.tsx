@@ -25,7 +25,7 @@ export default function RelatoriosPage() {
       `);
       
       let normal = 0, atencao = 0, risco = 0;
-      const alunosCalc = (alunosDB || []).map(a => {
+      const alunosCalc = (alunosDB || []).map((a: any) => {
         const faltasCount = a.faltas?.[0]?.count || 0;
         let soma = 0; let qtd = 0;
         if(a.notas) {
@@ -65,11 +65,11 @@ export default function RelatoriosPage() {
       if (tutoresProfiles) {
         const tutoresStats = tutoresProfiles.map((t: any) => {
           // Filtrar alunos deste tutor
-          const alunosDoTutor = alunosCalc.filter(a => a.tutor_id === t.id && a.tutor_status === "aprovado");
+          const alunosDoTutor = alunosCalc.filter((a: any) => a.tutor_id === t.id && a.tutor_status === "aprovado");
           const tTotal = alunosDoTutor.length;
-          const tNormal = alunosDoTutor.filter(a => a.status === "normal").length;
-          const tAtencao = alunosDoTutor.filter(a => a.status === "atencao").length;
-          const tRisco = alunosDoTutor.filter(a => a.status === "risco").length;
+          const tNormal = alunosDoTutor.filter((a: any) => a.status === "normal").length;
+          const tAtencao = alunosDoTutor.filter((a: any) => a.status === "atencao").length;
+          const tRisco = alunosDoTutor.filter((a: any) => a.status === "risco").length;
 
           return {
             id: t.id,
