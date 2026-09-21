@@ -100,7 +100,7 @@ export default function TutorDashboardPage() {
                 <div key={aluno.id} className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex items-center justify-between">
                   <div>
                     <h3 className="font-bold text-slate-800">{aluno.profiles?.nome}</h3>
-                    <p className="text-xs text-slate-500">{aluno.turma} â€¢ RA: {aluno.ra}</p>
+                    <p className="text-xs text-slate-500">{aluno.turma} • RA: {aluno.ra}</p>
                   </div>
                   <div className="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">
                     Normal

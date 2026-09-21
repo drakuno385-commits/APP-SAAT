@@ -135,7 +135,7 @@ export default function ListaAlunosTutorPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-bold text-slate-800 text-lg">{aluno.profiles?.nome}</h3>
-                  <p className="text-slate-500 text-sm">{aluno.turma} â€¢ RA: {aluno.ra}</p>
+                  <p className="text-slate-500 text-sm">{aluno.turma} • RA: {aluno.ra}</p>
                 </div>
                 {filtro === "ativos" && (
                   <div className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">
