@@ -25,6 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR" className={`${InterSans.variable} h-full`}>
       <body className="min-h-full bg-slate-200 md:bg-slate-200">
+        <SessionGuard />
         {children}
       </body>
     </html>
