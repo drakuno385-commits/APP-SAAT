@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ChevronLeft, Search, CheckCircle, XCircle, LayoutDashboard, Users, MessageSquare, User } from "lucide-react";
+import { ChevronLeft, Search, LayoutDashboard, Users, MessageSquare, User } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function ListaAlunosTutorPage() {
@@ -9,6 +9,7 @@ export default function ListaAlunosTutorPage() {
   const [filtro, setFiltro] = useState<"ativos" | "pendentes">("ativos");
   const [alunos, setAlunos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState(""); // Debug message
 
   useEffect(() => {
     carregar();
@@ -19,11 +20,17 @@ export default function ListaAlunosTutorPage() {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("alunos")
         .select("*, profiles(nome)")
         .eq("tutor_id", user.id);
-      if (data) setAlunos(data);
+      
+      if (error) {
+        setErrorMsg("Erro do Banco: " + error.message);
+      }
+      if (data) {
+        setAlunos(data);
+      }
     }
     setLoading(false);
   }
@@ -44,13 +51,17 @@ export default function ListaAlunosTutorPage() {
     const nome = a.profiles?.nome?.toLowerCase() || "";
     const matchBusca = nome.includes(busca.toLowerCase());
     
+    // Tratativa extra: se tutor_status for undefined ou null, mas tutor_id ta setado, 
+    // significa que a coluna tutor_status ta bugada no banco!
+    const status = a.tutor_status || "pendente"; // Fallback se a coluna nao existir
+    
     if (filtro === "pendentes") {
-      return matchBusca && a.tutor_status === "pendente";
+      return matchBusca && status === "pendente";
     }
-    return matchBusca && a.tutor_status === "aprovado";
+    return matchBusca && status === "aprovado";
   });
 
-  const qtdPendentes = alunos.filter(a => a.tutor_status === "pendente").length;
+  const qtdPendentes = alunos.filter(a => (a.tutor_status || "pendente") === "pendente").length;
 
   return (
     <div className="app-shell min-h-screen bg-slate-50 pb-20">
@@ -74,6 +85,12 @@ export default function ListaAlunosTutorPage() {
         </div>
       </header>
 
+      {errorMsg && (
+        <div className="m-4 bg-red-100 text-red-700 p-3 rounded-lg text-sm font-bold text-center border border-red-200">
+          {errorMsg}
+        </div>
+      )}
+
       <div className="px-4 py-4 flex gap-2 overflow-x-auto no-scrollbar">
         <button
           onClick={() => setFiltro("ativos")}
@@ -89,7 +106,7 @@ export default function ListaAlunosTutorPage() {
             filtro === "pendentes" ? "bg-amber-500 text-white" : "bg-white border border-slate-200 text-slate-600"
           }`}
         >
-          SÃ£olicitaÃ§Ãµes
+          Solicitações
           {qtdPendentes > 0 && (
             <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full shadow-md">
               {qtdPendentes}
@@ -103,9 +120,14 @@ export default function ListaAlunosTutorPage() {
           <p className="text-center text-slate-500 py-8">Carregando alunos...</p>
         ) : alunosFiltrados.length === 0 ? (
           <div className="text-center py-10 bg-white rounded-2xl border border-slate-200 shadow-sm">
-            <p className="text-slate-500">
-              {filtro === "pendentes" ? "Nenhuma solicitaÃ§Ã£o pendente no momento." : "Nenhum aluno ativo encontrado."}
+            <p className="text-slate-500 font-medium">
+              {filtro === "pendentes" ? "Nenhuma solicitação pendente no momento." : "Nenhum aluno ativo encontrado."}
             </p>
+            {alunos.length === 0 && (
+              <p className="text-xs text-slate-400 mt-2 px-4">
+                Nenhum aluno vinculou o seu ID no cadastro ainda.
+              </p>
+            )}
           </div>
         ) : (
           alunosFiltrados.map(aluno => (
@@ -113,7 +135,7 @@ export default function ListaAlunosTutorPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-bold text-slate-800 text-lg">{aluno.profiles?.nome}</h3>
-                  <p className="text-slate-500 text-sm">{aluno.turma} â€¢ RA: {aluno.ra}</p>
+                  <p className="text-slate-500 text-sm">{aluno.turma} • RA: {aluno.ra}</p>
                 </div>
                 {filtro === "ativos" && (
                   <div className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">
@@ -143,7 +165,7 @@ export default function ListaAlunosTutorPage() {
         )}
       </div>
 
-            <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-slate-100 z-50">
+      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-slate-100 z-50">
         <div className="flex">
           {[
             { href: "/tutor/painel", label: "Painel", icon: LayoutDashboard },
@@ -152,9 +174,8 @@ export default function ListaAlunosTutorPage() {
             { href: "/tutor/perfil", label: "Perfil", icon: User },
           ].map((item) => {
             const Icon = item.icon;
-            // Simplificado para evitar window reference is not defined during SSR (Hydration mismatch)
             return (
-              <Link key={item.href} href={item.href} className="flex-1 flex flex-col items-center gap-1 py-3 text-xs text-slate-400 hover:text-indigo-600 focus:text-indigo-600">
+              <Link key={item.href} href={item.href} className={`flex-1 flex flex-col items-center gap-1 py-3 text-xs ${item.href === "/tutor/alunos" ? "text-indigo-600" : "text-slate-400"}`}>
                 <Icon size={20} />
                 <span className="font-medium">{item.label}</span>
               </Link>
