@@ -32,8 +32,7 @@ export default function LoginPage() {
     const role = data.user.user_metadata?.role || "aluno";
     const dest = role === "tutor" ? "/tutor/painel" : role === "gestor" ? "/gestor/relatorios" : "/aluno/dashboard";
     
-    router.push(dest);
-    router.refresh();
+    window.location.href = dest;
   }
 
   return (
