@@ -1,7 +1,7 @@
 ﻿"use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ChevronRight, Users, AlertTriangle, GraduationCap, ArrowUpRight } from "lucide-react";
+import { ChevronRight, Users, AlertTriangle, GraduationCap, ArrowUpRight, MapPin } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { createClient } from "@/lib/supabase/client";
 
@@ -16,15 +16,7 @@ export default function RelatoriosPage() {
     async function load() {
       const supabase = createClient();
       
-      const { data: alunosDB } = await supabase.from("alunos").select(
-        id, 
-        tutor_id,
-        tutor_status,
-        matricula,
-        profiles!inner(nome),
-        faltas(count),
-        notas(b1,b2,b3,b4)
-      );
+      const { data: alunosDB } = await supabase.from("alunos").select("id, tutor_id, tutor_status, matricula, profiles!inner(nome), faltas(count), notas(b1,b2,b3,b4)");
       
       let normal = 0, atencao = 0, risco = 0;
       const alunosCalc = (alunosDB || []).map((a: any) => {
@@ -61,12 +53,11 @@ export default function RelatoriosPage() {
         { name: "Risco", value: risco, color: "#dc2626" },
       ]);
 
-      // Filtrar top riscos (ordenados por mais faltas)
       const emRisco = alunosCalc.filter(a => a.status === "risco" || a.status === "atencao");
       emRisco.sort((a, b) => {
           if (a.status === "risco" && b.status !== "risco") return -1;
           if (b.status === "risco" && a.status !== "risco") return 1;
-          return b.faltasCount - a.faltasCount; // desempata por faltas
+          return b.faltasCount - a.faltasCount;
       });
       setTopRiscos(emRisco.slice(0, 5));
 
@@ -134,6 +125,17 @@ export default function RelatoriosPage() {
               </div>
             </div>
 
+            {/* Configuraes da Escola */}
+            <Link href="/gestor/escola" className="bg-purple-600 rounded-2xl p-5 border border-purple-500 shadow-md flex items-center justify-between hover:bg-purple-700 transition">
+              <div>
+                <h2 className="text-white font-bold text-lg mb-1">Configurações da Escola</h2>
+                <p className="text-purple-200 text-xs">Horários de aula e endereço GPS</p>
+              </div>
+              <div className="w-12 h-12 bg-purple-500/50 rounded-full flex items-center justify-center">
+                <MapPin size={24} className="text-white" />
+              </div>
+            </Link>
+
             {/* Grfico de rosca geral */}
             <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
               <p className="text-sm font-semibold text-slate-700 mb-3">Saúde Geral dos Alunos</p>
@@ -149,7 +151,7 @@ export default function RelatoriosPage() {
                       paddingAngle={5} dataKey="value"
                     >
                       {distribuicao.map((entry, index) => (
-                        <Cell key={cell-} fill={entry.color} />
+                        <Cell key={cell-+index} fill={entry.color} />
                       ))}
                     </Pie>
                     <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
@@ -179,7 +181,7 @@ export default function RelatoriosPage() {
                   {topRiscos.map(a => (
                     <div key={a.id} className="bg-white rounded-xl p-3 border border-slate-100 shadow-sm flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <div className={w-2 h-10 rounded-full \}></div>
+                            <div className={"w-2 h-10 rounded-full " + (a.status === 'risco' ? 'bg-red-500' : 'bg-amber-500')}></div>
                             <div>
                                 <p className="text-sm font-bold text-slate-800">{a.nome || "Sem Nome"}</p>
                                 <p className="text-xs text-slate-500 mt-0.5">
@@ -187,7 +189,7 @@ export default function RelatoriosPage() {
                                 </p>
                             </div>
                         </div>
-                        <Link href={/gestor/alunos} className="bg-slate-50 p-2 rounded-full text-slate-500 hover:text-indigo-600">
+                        <Link href="/gestor/alunos" className="bg-slate-50 p-2 rounded-full text-slate-500 hover:text-indigo-600">
                             <ArrowUpRight size={16} />
                         </Link>
                     </div>
@@ -208,7 +210,7 @@ export default function RelatoriosPage() {
               ) : (
                 <div className="flex flex-col gap-3">
                   {tutores.map(t => (
-                    <Link key={t.id} href={/gestor/tutor/} className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm block hover:border-purple-300 transition">
+                    <Link key={t.id} href={/gestor/tutor/+t.id} className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm block hover:border-purple-300 transition">
                       <div className="flex justify-between items-center mb-3">
                         <div>
                           <p className="font-bold text-slate-800">{t.nome}</p>
@@ -221,9 +223,9 @@ export default function RelatoriosPage() {
                         <p className="text-xs text-slate-400">Sem alunos aprovados ainda.</p>
                       ) : (
                         <div className="flex h-3 w-full rounded-full overflow-hidden">
-                          {t.pctNormal > 0 && <div style={{ width: ${t.pctNormal}% }} className="bg-green-600 h-full" title={Normal: %} />}
-                          {t.pctAtencao > 0 && <div style={{ width: ${t.pctAtencao}% }} className="bg-amber-500 h-full" title={Atenção: %} />}
-                          {t.pctRisco > 0 && <div style={{ width: ${t.pctRisco}% }} className="bg-red-600 h-full" title={Risco: %} />}
+                          {t.pctNormal > 0 && <div style={{ width: t.pctNormal + '%' }} className="bg-green-600 h-full" title={Normal: +t.pctNormal+%} />}
+                          {t.pctAtencao > 0 && <div style={{ width: t.pctAtencao + '%' }} className="bg-amber-500 h-full" title={Atenção: +t.pctAtencao+%} />}
+                          {t.pctRisco > 0 && <div style={{ width: t.pctRisco + '%' }} className="bg-red-600 h-full" title={Risco: +t.pctRisco+%} />}
                         </div>
                       )}
                       
