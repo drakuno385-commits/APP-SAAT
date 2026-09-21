@@ -6,14 +6,26 @@ import { createClient } from "@/lib/supabase/client";
 
 export default function PerfilAlunoPage() {
   const [nome, setNome] = useState("Aluno");
+  const [turma, setTurma] = useState("Carregando turma...");
+  const [escolaNome, setEscolaNome] = useState("Escola");
 
   useEffect(() => {
     async function load() {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        const { data } = await supabase.from("profiles").select("nome").eq("id", user.id).single();
-        if(data) setNome(data.nome);
+        const { data: profile } = await supabase.from("profiles").select("nome").eq("id", user.id).single();
+        if (profile) setNome(profile.nome);
+
+        const { data: aluno } = await supabase.from("alunos").select("turma, escolas(nome)").eq("user_id", user.id).single();
+        if (aluno) {
+          setTurma(aluno.turma || "Turma não informada");
+          if (aluno.escolas && typeof aluno.escolas === 'object' && 'nome' in aluno.escolas) {
+            setEscolaNome((aluno.escolas as any).nome);
+          } else {
+             setEscolaNome("EE Prof. Eurípedes");
+          }
+        }
       }
     }
     load();
@@ -39,7 +51,7 @@ export default function PerfilAlunoPage() {
           </div>
           <div className="text-center">
             <p className="font-bold text-slate-800 text-lg">{nome}</p>
-            <p className="text-slate-500 text-sm">2º Ano A • EE Prof. Eurípedes</p>
+            <p className="text-slate-500 text-sm">{turma} • {escolaNome}</p>
           </div>
         </div>
 

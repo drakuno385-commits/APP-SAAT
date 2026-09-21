@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronRight, Clock, BookOpen, Briefcase, AlertTriangle } from "lucide-react";
@@ -9,16 +9,17 @@ export default function RotinaPage() {
   const [saved, setSaved] = useState(false);
   const aluno = mockAluno;
 
-  const entradaEscola = "07:00";
-  const saidaEscola = "16:00";
-  const entradaTrabalho = aluno.trabalho_entrada || "17:00";
-  const saidaTrabalho = aluno.trabalho_saida || "22:00";
+  // New hours requested by user
+  const entradaEscola = "14:15";
+  const saidaEscola = "21:15";
+  const entradaTrabalho = aluno.trabalho_entrada || "08:00";
+  const saidaTrabalho = aluno.trabalho_saida || "13:00";
 
   // Calcula tempo livre
-  const [stH, stM] = saidaTrabalho.split(":").map(Number);
+  const [stH, stM] = saidaEscola.split(":").map(Number);
   const tempoLivreInicio = `${String(stH).padStart(2, "0")}:${String(stM + 30).padStart(2, "0")}`;
   const tempoLivreFim = "23:30";
-  const tempoLivreHoras = 1; // 1h disponvel
+  const tempoLivreHoras = 1.5; // Aproximadamente
 
   async function handleSalvar() {
     setSaved(true);
@@ -54,13 +55,13 @@ export default function RotinaPage() {
               <p className="text-2xl font-bold text-slate-800">{entradaEscola}</p>
             </div>
             <div>
-              <p className="text-xs text-slate-400 mb-1">Sada</p>
+              <p className="text-xs text-slate-400 mb-1">Saída</p>
               <p className="text-2xl font-bold text-slate-800">{saidaEscola}</p>
             </div>
           </div>
         </div>
 
-        {/* Trabalho */}
+        {/* Trabalho (se houver) */}
         {aluno.trabalha && (
           <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
             <div className="flex items-center gap-2 mb-3">
@@ -75,45 +76,43 @@ export default function RotinaPage() {
                 <p className="text-2xl font-bold text-slate-800">{entradaTrabalho}</p>
               </div>
               <div>
-                <p className="text-xs text-slate-400 mb-1">Sada</p>
+                <p className="text-xs text-slate-400 mb-1">Saída</p>
                 <p className="text-2xl font-bold text-slate-800">{saidaTrabalho}</p>
               </div>
             </div>
           </div>
         )}
 
-        {/* Tempo disponvel */}
-        <div className="bg-blue-50 rounded-2xl p-4 border border-blue-100">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Clock size={16} className="text-blue-600" />
+        {/* Diagnóstico Tempo Livre */}
+        <div className="mt-4 border-2 border-indigo-100 bg-indigo-50/50 rounded-2xl p-4">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center shrink-0">
+              <Clock size={20} />
             </div>
-            <span className="font-semibold text-slate-800">Tempo disponvel para estudar</span>
-          </div>
-          <p className="text-2xl font-bold text-blue-700">
-            {tempoLivreInicio}  {tempoLivreFim}
-          </p>
-        </div>
-
-        {/* Alerta de tempo reduzido */}
-        {tempoLivreHoras < 2 && (
-          <div className="bg-yellow-50 rounded-2xl p-4 border border-yellow-200 flex gap-3">
-            <AlertTriangle size={18} className="text-yellow-600 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm text-yellow-800 font-medium">Pouco tempo para estudar</p>
-              <p className="text-xs text-yellow-700 mt-0.5">
-                Seu tempo disponvel para estudo  reduzido. Seu tutor poder ajud-lo a organizar sua rotina.
+              <h3 className="font-bold text-indigo-900 mb-1">Janela de Estudos</h3>
+              <p className="text-sm text-indigo-700 leading-snug">
+                Seu tempo livre sugerido é das <strong>{tempoLivreInicio} às {tempoLivreFim}</strong>.
               </p>
+              {tempoLivreHoras < 2 && (
+                <div className="flex gap-2 items-start mt-3 bg-white p-3 rounded-xl border border-indigo-100">
+                  <AlertTriangle size={16} className="text-amber-500 shrink-0 mt-0.5" />
+                  <p className="text-xs text-slate-600 font-medium">
+                    Você tem pouco tempo livre (aprox. {tempoLivreHoras}h). 
+                    Foque em revisar tópicos das provas.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
-        )}
+        </div>
 
         <button
           onClick={handleSalvar}
           disabled={saved}
-          className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl transition text-base shadow-md mt-2"
+          className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition"
         >
-          {saved ? "Salvando..." : "Salvar"}
+          {saved ? "Salvo!" : "Confirmar Rotina"}
         </button>
       </div>
     </div>
