@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 import { createClient } from "@/lib/supabase/client";
 
 // Carrega o mapa apenas no cliente
-const MapaEscola = dynamic(() => import("@/components/gestor/MapaEscola"), { ssr: false });
+const MapaEscola = dynamic(() => import("@/components/gestor/MapaEscola").then(mod => mod.default), { ssr: false });
 
 export default function EscolaCadastroPage() {
   const [escolaId, setEscolaId] = useState<string | null>(null);
@@ -21,25 +21,33 @@ export default function EscolaCadastroPage() {
   const [capturando, setCapturando] = useState(false);
   const [salvo, setSalvo] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadEscola() {
-      const supabase = createClient();
-      const { data } = await supabase.from("escolas").select("*").limit(1).single();
-      if (data) {
-        setEscolaId(data.id);
-        setForm({
-          nome: data.nome || "",
-          endereco: data.endereco || "",
-          horarioEntrada: (data.horario_entrada ? data.horario_entrada.substring(0,5) : "14:15"),
-          horarioSaida: (data.horario_saida ? data.horario_saida.substring(0,5) : "21:15"),
-          raio: data.raio_metros || 100,
-        });
-        if (data.lat && data.lng) {
-          setCoords({ lat: data.lat, lng: data.lng });
+      try {
+        const supabase = createClient();
+        const { data } = await supabase.from("escolas").select("*").limit(1).single();
+        if (data) {
+          setEscolaId(data.id);
+          setForm({
+            nome: data.nome || "",
+            endereco: data.endereco || "",
+            horarioEntrada: (data.horario_entrada ? String(data.horario_entrada).substring(0,5) : "14:15"),
+            horarioSaida: (data.horario_saida ? String(data.horario_saida).substring(0,5) : "21:15"),
+            raio: Number(data.raio_metros) || 100,
+          });
+          if (data.lat && data.lng) {
+            setCoords({ lat: Number(data.lat), lng: Number(data.lng) });
+          }
         }
+      } catch (err: any) {
+        if (err.code !== "PGRST116") {
+          console.error(err);
+        }
+      } finally {
+        setLoadingData(false);
       }
-      setLoadingData(false);
     }
     loadEscola();
   }, []);
@@ -53,11 +61,10 @@ export default function EscolaCadastroPage() {
     }
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setCoords({ lat: Number(pos.coords.latitude), lng: Number(pos.coords.longitude) });
         setCapturando(false);
       },
       () => {
-        // Fallback
         setCoords({ lat: -23.5505, lng: -46.6333 });
         setCapturando(false);
       },
@@ -69,36 +76,40 @@ export default function EscolaCadastroPage() {
     e.preventDefault();
     if (!coords) { alert("Capture a geolocalização primeiro!"); return; }
     
-    const supabase = createClient();
-    
-    if (escolaId) {
-      await supabase.from("escolas").update({
-        nome: form.nome,
-        endereco: form.endereco,
-        horario_entrada: form.horarioEntrada,
-        horario_saida: form.horarioSaida,
-        raio_metros: form.raio,
-        lat: coords.lat,
-        lng: coords.lng
-      }).eq("id", escolaId);
-    } else {
-      const { data } = await supabase.from("escolas").insert({
-        nome: form.nome,
-        endereco: form.endereco,
-        horario_entrada: form.horarioEntrada,
-        horario_saida: form.horarioSaida,
-        raio_metros: form.raio,
-        lat: coords.lat,
-        lng: coords.lng
-      }).select().single();
-      if (data) setEscolaId(data.id);
-    }
-    
     setSalvo(true);
-    setTimeout(() => setSalvo(false), 3000);
+    try {
+      const supabase = createClient();
+      if (escolaId) {
+        await supabase.from("escolas").update({
+          nome: form.nome,
+          endereco: form.endereco,
+          horario_entrada: form.horarioEntrada,
+          horario_saida: form.horarioSaida,
+          raio_metros: form.raio,
+          lat: coords.lat,
+          lng: coords.lng
+        }).eq("id", escolaId);
+      } else {
+        const { data } = await supabase.from("escolas").insert({
+          nome: form.nome,
+          endereco: form.endereco,
+          horario_entrada: form.horarioEntrada,
+          horario_saida: form.horarioSaida,
+          raio_metros: form.raio,
+          lat: coords.lat,
+          lng: coords.lng
+        }).select().single();
+        if (data) setEscolaId(data.id);
+      }
+      setTimeout(() => setSalvo(false), 3000);
+    } catch(err) {
+      alert("Erro ao salvar.");
+      setSalvo(false);
+    }
   }
 
   if (loadingData) return <div className="p-8 text-center text-slate-500 font-bold">Carregando dados da escola...</div>;
+  if (errorMsg) return <div className="p-8 text-red-500">{errorMsg}</div>;
 
   return (
     <div className="app-shell min-h-screen bg-slate-50 pb-24">
@@ -177,9 +188,9 @@ export default function EscolaCadastroPage() {
 
           {coords ? (
             <div className="w-full h-48 bg-slate-100 rounded-xl overflow-hidden border border-slate-200 relative">
-              <MapaEscola lat={coords.lat} lng={coords.lng} raio={form.raio} />
+              <MapaEscola lat={Number(coords.lat)} lng={Number(coords.lng)} raio={form.raio} />
               <div className="absolute top-2 left-2 right-2 bg-white/90 backdrop-blur-sm p-2 rounded-lg border border-slate-200 text-xs font-bold text-slate-700 shadow-sm">
-                Lat: {coords.lat.toFixed(6)} | Lng: {coords.lng.toFixed(6)}
+                Lat: {Number(coords.lat).toFixed(6)} | Lng: {Number(coords.lng).toFixed(6)}
               </div>
             </div>
           ) : (

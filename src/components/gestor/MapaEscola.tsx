@@ -1,17 +1,7 @@
 ﻿"use client";
 import { useEffect, useRef } from "react";
-import L from "leaflet";
+import * as L from "leaflet";
 import "leaflet/dist/leaflet.css";
-
-// Corrige o ícone padrão do Leaflet no lado do cliente
-if (typeof window !== "undefined") {
-  delete (L.Icon.Default.prototype as any)._getIconUrl;
-  L.Icon.Default.mergeOptions({
-    iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-    iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-    shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-  });
-}
 
 interface MapaEscolaProps {
   lat: number;
@@ -28,38 +18,50 @@ export default function MapaEscola({ lat, lng, raio }: MapaEscolaProps) {
   useEffect(() => {
     if (typeof window === "undefined" || !mapRef.current) return;
 
-    // Inicializa o mapa apenas uma vez
-    if (!leafletMap.current) {
-      leafletMap.current = L.map(mapRef.current, {
-        scrollWheelZoom: false,
-      }).setView([lat, lng], 17);
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap'
-      }).addTo(leafletMap.current);
-
-      marker.current = L.marker([lat, lng]).addTo(leafletMap.current);
-      marker.current.bindPopup("Localização da escola").openPopup();
-
-      circle.current = L.circle([lat, lng], {
-        color: "#2563eb",
-        fillColor: "#2563eb",
-        fillOpacity: 0.15,
-        radius: raio
-      }).addTo(leafletMap.current);
-    } else {
-      // Se o mapa já existe, apenas atualiza as posições
-      leafletMap.current.setView([lat, lng]);
-      if (marker.current) {
-        marker.current.setLatLng([lat, lng]);
+    try {
+      if (L && L.Icon && L.Icon.Default && L.Icon.Default.prototype) {
+        delete (L.Icon.Default.prototype as any)._getIconUrl;
+        L.Icon.Default.mergeOptions({
+          iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+          iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+          shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+        });
       }
-      if (circle.current) {
-        circle.current.setLatLng([lat, lng]);
-        circle.current.setRadius(raio);
-      }
+    } catch (e) {
+      console.warn("Leaflet icon fix skipped");
     }
 
-    // Cleanup na desmontagem do componente
+    try {
+      if (!leafletMap.current) {
+        leafletMap.current = L.map(mapRef.current, {
+          scrollWheelZoom: false,
+        }).setView([lat, lng], 17);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap'
+        }).addTo(leafletMap.current);
+
+        marker.current = L.marker([lat, lng]).addTo(leafletMap.current);
+        marker.current.bindPopup("Localização da escola").openPopup();
+
+        circle.current = L.circle([lat, lng], {
+          color: "#2563eb",
+          fillColor: "#2563eb",
+          fillOpacity: 0.15,
+          radius: raio
+        }).addTo(leafletMap.current);
+      } else {
+        leafletMap.current.setView([lat, lng]);
+        if (marker.current) marker.current.setLatLng([lat, lng]);
+        if (circle.current) {
+          circle.current.setLatLng([lat, lng]);
+          circle.current.setRadius(raio);
+        }
+      }
+    } catch(err) {
+      console.error("Leaflet init error:", err);
+    }
+
     return () => {
       if (leafletMap.current) {
         leafletMap.current.remove();
