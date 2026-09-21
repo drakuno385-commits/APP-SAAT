@@ -19,7 +19,7 @@ export function PresencaPopup({ escola }: PresencaPopupProps) {
 
   useEffect(() => {
     const dataHoje = new Date().toISOString().split("T")[0];
-    const jaApareceuHoje = localStorage.getItem(popup_visto_ + dataHoje);
+    const jaApareceuHoje = localStorage.getItem("popup_visto_" + dataHoje);
 
     if (!jaApareceuHoje) {
       // Verifica se j passou do horrio de entrada
@@ -40,7 +40,7 @@ export function PresencaPopup({ escola }: PresencaPopupProps) {
 
   function marcarComoVisto() {
     const dataHoje = new Date().toISOString().split("T")[0];
-    localStorage.setItem(popup_visto_ + dataHoje, "true");
+    localStorage.setItem("popup_visto_" + dataHoje, "true");
   }
 
   async function confirmarPresenca() {

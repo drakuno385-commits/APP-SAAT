@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { createClient } from "@/lib/supabase/client";
-import { ChevronRight, Users } from "lucide-react";
+import { ChevronRight, Users, MapPin } from "lucide-react";
 
 export default function RelatoriosPage() {
   const [loading, setLoading] = useState(true);
@@ -136,6 +136,17 @@ export default function RelatoriosPage() {
                 ))}
               </div>
             </div>
+
+            {/* Configurações da Escola */}
+            <Link href="/gestor/escola" className="bg-purple-600 rounded-2xl p-5 border border-purple-500 shadow-md flex items-center justify-between hover:bg-purple-700 transition mb-4">
+              <div>
+                <h2 className="text-white font-bold text-lg mb-1">Configurações da Escola</h2>
+                <p className="text-purple-200 text-xs">Horários de aula e endereço GPS</p>
+              </div>
+              <div className="w-12 h-12 bg-purple-500/50 rounded-full flex items-center justify-center">
+                <MapPin size={24} className="text-white" />
+              </div>
+            </Link>
 
             {/* Lista de Tutores */}
             <div>
