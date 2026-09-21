@@ -91,7 +91,7 @@ export default function RelatoriosPage() {
   return (
     <div className="app-shell min-h-screen bg-slate-50">
       <header className="bg-white px-4 py-4 border-b border-slate-100 flex items-center justify-between sticky top-0 z-40">
-        <h1 className="font-semibold text-slate-800">Painel da escola</h1>
+        <h1 className="font-semibold text-slate-800">Painel da Escola</h1>
         <div className="flex items-center gap-2">
           <select className="text-xs border border-slate-200 rounded-xl px-3 py-1.5 bg-white text-slate-600 focus:outline-none">
             <option>Visão Geral</option>
