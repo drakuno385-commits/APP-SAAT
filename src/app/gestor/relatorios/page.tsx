@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
@@ -63,7 +63,7 @@ export default function RelatoriosPage() {
       const { data: tutoresProfiles } = await supabase.from("profiles").select("*").eq("role", "tutor");
       
       if (tutoresProfiles) {
-        const tutoresStats = tutoresProfiles.map(t => {
+        const tutoresStats = tutoresProfiles.map((t: any) => {
           // Filtrar alunos deste tutor
           const alunosDoTutor = alunosCalc.filter(a => a.tutor_id === t.id && a.tutor_status === "aprovado");
           const tTotal = alunosDoTutor.length;

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import Link from "next/link";
 import { Search } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -71,7 +71,7 @@ export default function GestorAlunosPage() {
       
       if(alunosDB) {
         // Classificar risco de cada um para permitir filtros
-        const processados = alunosDB.map(a => {
+        const processados = alunosDB.map((a: any) => {
           const faltasCount = a.faltas?.[0]?.count || 0;
           let soma = 0; let qtd = 0;
           if(a.notas) {
