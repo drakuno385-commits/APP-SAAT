@@ -1,28 +1,51 @@
 ﻿"use client";
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export function SessionGuard() {
   const pathname = usePathname();
+  const router = useRouter();
   const [isValidating, setIsValidating] = useState(true);
 
   useEffect(() => {
     const isPublic = pathname === "/login" || pathname === "/cadastro" || pathname === "/";
-    if (isPublic) {
-      setIsValidating(false);
-      return;
-    }
+    const supabase = createClient();
 
-    const tabKey = "saat_session_active";
-    const isActiveTab = sessionStorage.getItem(tabKey);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session && !isPublic) {
+        // Not logged in, trying to access private route
+        window.location.href = "/login";
+        return;
+      }
 
-    if (!isActiveTab) {
-      // Aba nova identificada! Bloqueia a tela e derruba a sessão
-      window.location.replace("/api/auth/logout");
-    } else {
+      if (session && isPublic) {
+        // Logged in, trying to access public route
+        const role = session.user.user_metadata?.role || "aluno";
+        const dest = role === "tutor" ? "/tutor/painel" : role === "gestor" ? "/gestor/relatorios" : "/aluno/dashboard";
+        window.location.href = dest;
+        return;
+      }
+
+      // If logged in, check role matching
+      if (session && !isPublic) {
+        const role = session.user.user_metadata?.role || "aluno";
+        if (role === "aluno" && !pathname.startsWith("/aluno")) {
+            window.location.href = "/aluno/dashboard";
+            return;
+        }
+        if (role === "tutor" && !pathname.startsWith("/tutor")) {
+            window.location.href = "/tutor/painel";
+            return;
+        }
+        if (role === "gestor" && !pathname.startsWith("/gestor")) {
+            window.location.href = "/gestor/relatorios";
+            return;
+        }
+      }
+
       setIsValidating(false);
-    }
+    });
   }, [pathname]);
 
   if (isValidating) {
