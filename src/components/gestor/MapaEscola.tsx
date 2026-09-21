@@ -4,14 +4,6 @@ import { MapContainer, TileLayer, Marker, Circle, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-// Fix Leaflet icon in Next.js
-delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-});
-
 interface MapaEscolaProps {
   lat: number;
   lng: number;
@@ -19,11 +11,23 @@ interface MapaEscolaProps {
 }
 
 export default function MapaEscola({ lat, lng, raio }: MapaEscolaProps) {
+  useEffect(() => {
+    // Fix Leaflet icon in Next.js
+    if (typeof window !== "undefined") {
+      delete (L.Icon.Default.prototype as any)._getIconUrl;
+      L.Icon.Default.mergeOptions({
+        iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+        iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+        shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+      });
+    }
+  }, []);
+
   return (
     <MapContainer
       center={[lat, lng]}
       zoom={17}
-      style={{ height: "100%", width: "100%" }}
+      style={{ height: "100%", width: "100%", zIndex: 1 }}
       scrollWheelZoom={false}
     >
       <TileLayer
@@ -31,7 +35,7 @@ export default function MapaEscola({ lat, lng, raio }: MapaEscolaProps) {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <Marker position={[lat, lng]}>
-        <Popup> Localizao da escola</Popup>
+        <Popup>Localização da escola</Popup>
       </Marker>
       <Circle
         center={[lat, lng]}
