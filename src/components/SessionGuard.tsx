@@ -19,10 +19,7 @@ export function SessionGuard() {
 
     if (!isActiveTab) {
       // Aba nova identificada! Bloqueia a tela e derruba a sessão
-      const supabase = createClient();
-      supabase.auth.signOut().finally(() => {
-        window.location.replace("/");
-      });
+      window.location.replace("/api/auth/logout");
     } else {
       setIsValidating(false);
     }
