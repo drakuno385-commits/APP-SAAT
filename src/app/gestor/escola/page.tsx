@@ -11,8 +11,8 @@ export default function EscolaCadastroPage() {
   const [form, setForm] = useState({
     nome: "EE Professora Maria Aparecida",
     endereco: "Rua das Flores, 123 - São Paulo, SP",
-    horarioEntrada: "07:00",
-    horarioSaida: "16:00",
+    horarioEntrada: "14:15",
+    horarioSaida: "21:15",
     raio: 100,
   });
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
