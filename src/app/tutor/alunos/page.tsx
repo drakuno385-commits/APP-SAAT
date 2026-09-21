@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ChevronLeft, Search, LayoutDashboard, Users, MessageSquare, User } from "lucide-react";
+import { ChevronLeft, Calendar, BookOpen, AlertTriangle, TrendingUp, Search, LayoutDashboard, Users, MessageSquare, User } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function ListaAlunosTutorPage() {
@@ -9,7 +9,6 @@ export default function ListaAlunosTutorPage() {
   const [filtro, setFiltro] = useState<"ativos" | "pendentes">("ativos");
   const [alunos, setAlunos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [errorMsg, setErrorMsg] = useState(""); // Debug message
 
   useEffect(() => {
     carregar();
@@ -25,9 +24,6 @@ export default function ListaAlunosTutorPage() {
         .select("*, profiles!alunos_user_id_fkey(nome)")
         .eq("tutor_id", user.id);
       
-      if (error) {
-        setErrorMsg("Erro do Banco: " + error.message);
-      }
       if (data) {
         setAlunos(data);
       }
@@ -38,22 +34,19 @@ export default function ListaAlunosTutorPage() {
   async function aprovarAluno(alunoId: string) {
     const supabase = createClient();
     await supabase.from("alunos").update({ tutor_status: "aprovado" }).eq("id", alunoId);
-    carregar(); // Recarrega a lista
+    carregar();
   }
 
   async function recusarAluno(alunoId: string) {
     const supabase = createClient();
     await supabase.from("alunos").update({ tutor_status: null, tutor_id: null }).eq("id", alunoId);
-    carregar(); // Recarrega a lista
+    carregar();
   }
 
   const alunosFiltrados = alunos.filter(a => {
     const nome = a.profiles?.nome?.toLowerCase() || "";
     const matchBusca = nome.includes(busca.toLowerCase());
-    
-    // Tratativa extra: se tutor_status for undefined ou null, mas tutor_id ta setado, 
-    // significa que a coluna tutor_status ta bugada no banco!
-    const status = a.tutor_status || "pendente"; // Fallback se a coluna nao existir
+    const status = a.tutor_status || "pendente";
     
     if (filtro === "pendentes") {
       return matchBusca && status === "pendente";
@@ -84,12 +77,6 @@ export default function ListaAlunosTutorPage() {
           />
         </div>
       </header>
-
-      {errorMsg && (
-        <div className="m-4 bg-red-100 text-red-700 p-3 rounded-lg text-sm font-bold text-center border border-red-200">
-          {errorMsg}
-        </div>
-      )}
 
       <div className="px-4 py-4 flex gap-2 overflow-x-auto no-scrollbar">
         <button
@@ -123,11 +110,6 @@ export default function ListaAlunosTutorPage() {
             <p className="text-slate-500 font-medium">
               {filtro === "pendentes" ? "Nenhuma solicitação pendente no momento." : "Nenhum aluno ativo encontrado."}
             </p>
-            {alunos.length === 0 && (
-              <p className="text-xs text-slate-400 mt-2 px-4">
-                Nenhum aluno vinculou o seu ID no cadastro ainda.
-              </p>
-            )}
           </div>
         ) : (
           alunosFiltrados.map(aluno => (
@@ -144,7 +126,7 @@ export default function ListaAlunosTutorPage() {
                 )}
               </div>
               
-              {filtro === "pendentes" && (
+              {filtro === "pendentes" ? (
                 <div className="flex gap-2 pt-2 border-t border-slate-100">
                   <button 
                     onClick={() => recusarAluno(aluno.id)}
@@ -158,6 +140,15 @@ export default function ListaAlunosTutorPage() {
                   >
                     Aprovar Aluno
                   </button>
+                </div>
+              ) : (
+                <div className="flex gap-2 pt-2 border-t border-slate-100">
+                  <Link 
+                    href={`/tutor/aluno/${aluno.id}`}
+                    className="flex-1 bg-indigo-50 text-indigo-700 font-bold py-2.5 rounded-lg text-sm hover:bg-indigo-100 transition text-center"
+                  >
+                    Ver Perfil do Aluno
+                  </Link>
                 </div>
               )}
             </div>
