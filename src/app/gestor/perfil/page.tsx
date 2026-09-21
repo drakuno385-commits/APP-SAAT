@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { LayoutDashboard, Users, School, User } from "lucide-react";
+import { LayoutDashboard, Users, School, User, LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function PerfilGestorPage() {
@@ -16,7 +16,6 @@ export default function PerfilGestorPage() {
         const { data } = await supabase.from("profiles").select("nome").eq("id", user.id).single();
         if(data) setNome(data.nome);
 
-        // Pega a primeira escola cadastrada no sistema
         const { data: escola } = await supabase.from("escolas").select("nome").limit(1).single();
         if (escola) {
           setEscolaNome(escola.nome);
@@ -54,28 +53,34 @@ export default function PerfilGestorPage() {
 
         <button 
           onClick={handleLogout} 
-          className="w-full bg-white border border-red-200 text-red-600 font-bold py-4 rounded-xl hover:bg-red-50 transition shadow-sm"
+          className="w-full bg-white border border-red-200 text-red-600 font-bold py-4 rounded-xl hover:bg-red-50 transition shadow-sm flex items-center justify-center gap-2"
         >
-          Sair da conta
+          <LogOut size={20} /> Sair da conta
         </button>
       </div>
 
       <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-slate-100 z-50">
         <div className="flex">
-          {[
-            { href: "/gestor/relatorios", label: "Relatórios", icon: LayoutDashboard },
-            { href: "/gestor/alunos", label: "Alunos", icon: Users },
-            { href: "/gestor/escola", label: "Escola", icon: School },
-            { href: "/gestor/perfil", label: "Perfil", icon: User },
-          ].map((item) => {
-            const Icon = item.icon;
-            return (
-              <Link key={item.href} href={item.href} className={`flex-1 flex flex-col items-center gap-1 py-3 text-xs ${item.href === "/gestor/perfil" ? "text-purple-600" : "text-slate-400"}`}>
-                <Icon size={20} />
-                <span className="font-medium">{item.label}</span>
-              </Link>
-            )
-          })}
+          <Link href="/gestor/relatorios" className="flex-1 flex flex-col items-center gap-1 py-3 text-xs text-slate-400">
+            <LayoutDashboard size={20} />
+            <span className="font-medium">Relatórios</span>
+          </Link>
+          <Link href="/gestor/alunos" className="flex-1 flex flex-col items-center gap-1 py-3 text-xs text-slate-400">
+            <Users size={20} />
+            <span className="font-medium">Alunos</span>
+          </Link>
+          <Link href="/gestor/escola" className="flex-1 flex flex-col items-center gap-1 py-3 text-xs text-slate-400">
+            <School size={20} />
+            <span className="font-medium">Escola</span>
+          </Link>
+          <Link href="/gestor/perfil" className="flex-1 flex flex-col items-center gap-1 py-3 text-xs text-purple-600">
+            <User size={20} />
+            <span className="font-medium">Perfil</span>
+          </Link>
+          <button onClick={handleLogout} className="flex-1 flex flex-col items-center gap-1 py-3 text-xs text-red-400 hover:text-red-600 hover:bg-red-50 transition">
+            <LogOut size={20} />
+            <span className="font-medium">Sair</span>
+          </button>
         </div>
       </nav>
     </div>
