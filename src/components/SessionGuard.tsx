@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -21,7 +21,7 @@ export function SessionGuard() {
       // Aba nova identificada! Bloqueia a tela e derruba a sessão
       const supabase = createClient();
       supabase.auth.signOut().then(() => {
-        window.location.replace("/login");
+        window.location.replace("/");
       });
     } else {
       setIsValidating(false);

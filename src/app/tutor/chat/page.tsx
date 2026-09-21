@@ -10,6 +10,7 @@ export default function TutorChatPage() {
   const [msgs, setMsgs] = useState<any[]>([]);
   const [texto, setTexto] = useState("");
   const [loading, setLoading] = useState(true);
+  const [myUserId, setMyUserId] = useState("");
 
   useEffect(() => {
     async function carregarAlunos() {
@@ -17,7 +18,7 @@ export default function TutorChatPage() {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        // Carrega apenas os alunos aprovados pelo tutor
+        setMyUserId(user.id);
         const { data } = await supabase
           .from("alunos")
           .select("*, profiles!alunos_user_id_fkey(nome)")
@@ -30,21 +31,50 @@ export default function TutorChatPage() {
     carregarAlunos();
   }, []);
 
-  function enviar() {
+  // Fetch msgs when alunoAtivo changes
+  useEffect(() => {
+    if (!alunoAtivo) return;
+    async function fetchMsgs() {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("mensagens")
+        .select("*")
+        .or(`and(remetente_id.eq.${myUserId},destinatario_id.eq.${alunoAtivo.user_id}),and(remetente_id.eq.${alunoAtivo.user_id},destinatario_id.eq.${myUserId})`)
+        .order("created_at", { ascending: true });
+      if (data) {
+        setMsgs(data);
+      }
+    }
+    fetchMsgs();
+    
+    // Simple polling for new messages (realtime is better but requires setup)
+    const interval = setInterval(fetchMsgs, 3000);
+    return () => clearInterval(interval);
+  }, [alunoAtivo, myUserId]);
+
+  async function enviar() {
     if (!texto.trim() || !alunoAtivo) return;
-    setMsgs([...msgs, {
-      id: `m${Date.now()}`,
-      remetente_id: "tutor",
-      destinatario_id: alunoAtivo.id,
+    
+    // Optmistic update
+    const novaMsg = {
+      id: `temp-${Date.now()}`,
+      remetente_id: myUserId,
+      destinatario_id: alunoAtivo.user_id,
       texto,
-      created_at: new Date().toISOString(),
-      eu: true
-    }]);
+      created_at: new Date().toISOString()
+    };
+    setMsgs([...msgs, novaMsg]);
     setTexto("");
+
+    const supabase = createClient();
+    await supabase.from("mensagens").insert({
+      remetente_id: myUserId,
+      destinatario_id: alunoAtivo.user_id,
+      texto
+    });
   }
 
   if (alunoAtivo) {
-    const conversa = msgs.filter((m) => m.destinatario_id === alunoAtivo.id || m.remetente_id === alunoAtivo.id);
     return (
       <div className="app-shell min-h-screen bg-slate-50 flex flex-col">
         <header className="flex items-center gap-3 px-4 py-4 bg-white border-b border-slate-100 sticky top-0 z-40">
@@ -56,7 +86,7 @@ export default function TutorChatPage() {
           </div>
           <div>
             <p className="text-sm font-semibold text-slate-800">{alunoAtivo.profiles?.nome}</p>
-            <p className="text-xs text-slate-400">{alunoAtivo.turma} Ã¢â‚¬Â¢ RA: {alunoAtivo.ra}</p>
+            <p className="text-xs text-slate-400">{alunoAtivo.turma} • RA: {alunoAtivo.ra}</p>
           </div>
         </header>
 
@@ -66,17 +96,19 @@ export default function TutorChatPage() {
               Hoje
             </span>
           </div>
-          {conversa.length === 0 && (
-            <div className="text-center py-8 text-slate-400 text-sm">Nenhuma mensagem enviada. Mande um 'OlÃƒÂ¡' para {alunoAtivo.profiles?.nome}!</div>
+          {msgs.length === 0 && (
+            <div className="text-center py-8 text-slate-400 text-sm">Nenhuma mensagem enviada. Mande um 'Olá' para {alunoAtivo.profiles?.nome}!</div>
           )}
-          {conversa.map((m) => (
-            <div key={m.id} className={`flex ${m.eu ? "justify-end" : "justify-start"}`}>
-              <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${m.eu ? "bg-indigo-600 text-white rounded-br-sm" : "bg-white border border-slate-200 text-slate-700 rounded-bl-sm shadow-sm"}`}>
-                <p className="text-sm">{m.texto}</p>
-                <span className={`text-[10px] block mt-1 ${m.eu ? "text-indigo-200 text-right" : "text-slate-400"}`}>Agora</span>
+          {msgs.map((m) => {
+            const isMine = m.remetente_id === myUserId;
+            return (
+              <div key={m.id} className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
+                <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${isMine ? "bg-indigo-600 text-white rounded-br-sm" : "bg-white border border-slate-200 text-slate-700 rounded-bl-sm shadow-sm"}`}>
+                  <p className="text-sm">{m.texto}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="p-4 bg-white border-t border-slate-100 fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px]">
@@ -117,7 +149,7 @@ export default function TutorChatPage() {
           <div className="text-center py-10 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center">
             <MessageSquare size={32} className="text-slate-300 mb-3" />
             <p className="text-slate-500 font-medium">Nenhum aluno aprovado.</p>
-            <p className="text-slate-400 text-sm mt-1">VÃƒÂ¡ na aba Alunos e aprove as solicitaÃƒÂ§ÃƒÂµes.</p>
+            <p className="text-slate-400 text-sm mt-1">Vá na aba Alunos e aprove as solicitações.</p>
           </div>
         ) : (
           alunos.map(aluno => (
@@ -138,7 +170,7 @@ export default function TutorChatPage() {
         )}
       </div>
 
-            <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-slate-100 z-50">
+      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-slate-100 z-50">
         <div className="flex">
           {[
             { href: "/tutor/painel", label: "Painel", icon: LayoutDashboard },
@@ -147,9 +179,9 @@ export default function TutorChatPage() {
             { href: "/tutor/perfil", label: "Perfil", icon: User },
           ].map((item) => {
             const Icon = item.icon;
-            // Simplificado para evitar window reference is not defined during SSR (Hydration mismatch)
+            const isActive = typeof window !== 'undefined' ? window.location.pathname === item.href : false;
             return (
-              <Link key={item.href} href={item.href} className="flex-1 flex flex-col items-center gap-1 py-3 text-xs text-slate-400 hover:text-indigo-600 focus:text-indigo-600">
+              <Link key={item.href} href={item.href} className={`flex-1 flex flex-col items-center gap-1 py-3 text-xs ${isActive ? "text-indigo-600" : "text-slate-400"}`}>
                 <Icon size={20} />
                 <span className="font-medium">{item.label}</span>
               </Link>

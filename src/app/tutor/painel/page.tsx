@@ -38,8 +38,8 @@ export default function TutorDashboardPage() {
       <header className="bg-indigo-600 px-4 pt-10 pb-6 rounded-b-3xl shadow-md">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-white text-2xl font-bold">OlÃ¡, {nome}! ðŸ‘‹</h1>
-            <p className="text-indigo-100 text-sm mt-1">Aqui estÃ¡ o resumo dos seus alunos.</p>
+            <h1 className="text-white text-2xl font-bold">Olá, {nome}! 👋</h1>
+            <p className="text-indigo-100 text-sm mt-1">Aqui está o resumo dos seus alunos.</p>
           </div>
           <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
             <span className="text-xl font-bold text-white">{nome.charAt(0)}</span>
@@ -53,7 +53,7 @@ export default function TutorDashboardPage() {
           </div>
           <div className="bg-yellow-500/20 rounded-2xl p-3 backdrop-blur-sm border border-yellow-500/30 flex flex-col items-center justify-center text-white">
             <span className="text-2xl font-black text-yellow-300">{emAtencao}</span>
-            <span className="text-xs font-medium text-yellow-200 mt-1">AtenÃ§Ã£o</span>
+            <span className="text-xs font-medium text-yellow-200 mt-1">Atenção</span>
           </div>
           <div className="bg-red-500/20 rounded-2xl p-3 backdrop-blur-sm border border-red-500/30 flex flex-col items-center justify-center text-white">
             <span className="text-2xl font-black text-red-300">{emRisco}</span>
@@ -92,8 +92,8 @@ export default function TutorDashboardPage() {
             ) : alunos.length === 0 ? (
               <div className="bg-white rounded-2xl p-6 text-center border border-slate-200 shadow-sm">
                 <UserCheck size={32} className="text-slate-300 mx-auto mb-2" />
-                <p className="text-slate-600 font-medium">Nenhum aluno cadastrado com vocÃªÃª ainda.</p>
-                <p className="text-xs text-slate-400 mt-1">Assim que um aluno te escolher no cadastro, ele aparecerÃ¡ aqui.</p>
+                <p className="text-slate-600 font-medium">Nenhum aluno cadastrado com você ainda.</p>
+                <p className="text-xs text-slate-400 mt-1">Assim que um aluno te escolher no cadastro, ele aparecerá aqui.</p>
               </div>
             ) : (
               alunos.slice(0, 3).map(aluno => (

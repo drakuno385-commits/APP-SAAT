@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ChevronRight, Send, UserCheck, Clock, UserPlus } from "lucide-react";
@@ -10,7 +10,7 @@ export default function TutorPage() {
   const [tutorStatus, setTutorStatus] = useState<"pendente" | "aprovado" | null>(null);
   const [tutoresDisponiveis, setTutoresDisponiveis] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showChat, setShowChat] = useState(false);
+  const [showChat, setShowChat] = useState(false); const [myUserId, setMyUserId] = useState("");
   const [mensagens, setMensagens] = useState<any[]>([]);
   const [novaMensagem, setNovaMensagem] = useState("");
 
@@ -32,7 +32,7 @@ export default function TutorPage() {
       const { data: alunoInfo, error: errAluno } = await supabase.from("alunos").select("id, tutor_id, tutor_status").eq("user_id", user.id).single();
       
       if (alunoInfo) {
-        setAlunoId(alunoInfo.id);
+        setAlunoId(alunoInfo.id); setMyUserId(user.id);
         setTutorStatus(alunoInfo.tutor_status || null);
         
         if (alunoInfo.tutor_id) {
@@ -72,9 +72,35 @@ export default function TutorPage() {
     carregarDados();
   }
 
-  function enviarMensagem() {
+  async function enviarMensagem() {
     if (!novaMensagem.trim()) return;
-    setMensagens([...mensagens, { texto: novaMensagem, eu: true }]);
+    const msg = novaMensagem;
+    setNovaMensagem("");
+    setMensagens([...mensagens, { texto: msg, remetente_id: myUserId, id: Date.now() }]);
+    
+    const supabase = createClient();
+    await supabase.from("mensagens").insert({
+      remetente_id: myUserId,
+      destinatario_id: meuTutor.id,
+      texto: msg
+    });
+  }
+  
+  useEffect(() => {
+    if (!showChat || !meuTutor || !myUserId) return;
+    async function fetchMsgs() {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("mensagens")
+        .select("*")
+        .or(`and(remetente_id.eq.${myUserId},destinatario_id.eq.${meuTutor.id}),and(remetente_id.eq.${meuTutor.id},destinatario_id.eq.${myUserId})`)
+        .order("created_at", { ascending: true });
+      if (data) setMensagens(data);
+    }
+    fetchMsgs();
+    const interval = setInterval(fetchMsgs, 3000);
+    return () => clearInterval(interval);
+  }, [showChat, meuTutor, myUserId]);]);
     setNovaMensagem("");
   }
 
@@ -184,10 +210,10 @@ export default function TutorPage() {
             </span>
           </div>
           {mensagens.map((msg, i) => (
-            <div key={i} className={`flex ${msg.eu ? "justify-end" : "justify-start"}`}>
-              <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${msg.eu ? "bg-blue-600 text-white rounded-br-sm" : "bg-white border border-slate-200 text-slate-700 rounded-bl-sm shadow-sm"}`}>
+            <div key={i} className={`flex ${(msg.remetente_id === myUserId) ? "justify-end" : "justify-start"}`}>
+              <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${(msg.remetente_id === myUserId) ? "bg-blue-600 text-white rounded-br-sm" : "bg-white border border-slate-200 text-slate-700 rounded-bl-sm shadow-sm"}`}>
                 <p className="text-sm">{msg.texto}</p>
-                <span className={`text-[10px] block mt-1 ${msg.eu ? "text-blue-200 text-right" : "text-slate-400"}`}>Agora</span>
+                <span className={`text-[10px] block mt-1 ${(msg.remetente_id === myUserId) ? "text-blue-200 text-right" : "text-slate-400"}`}>Agora</span>
               </div>
             </div>
           ))}

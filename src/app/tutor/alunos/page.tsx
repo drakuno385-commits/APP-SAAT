@@ -106,7 +106,7 @@ export default function ListaAlunosTutorPage() {
             filtro === "pendentes" ? "bg-amber-500 text-white" : "bg-white border border-slate-200 text-slate-600"
           }`}
         >
-          SolicitaÃ§Ãµes
+          Solicitações
           {qtdPendentes > 0 && (
             <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full shadow-md">
               {qtdPendentes}
@@ -121,7 +121,7 @@ export default function ListaAlunosTutorPage() {
         ) : alunosFiltrados.length === 0 ? (
           <div className="text-center py-10 bg-white rounded-2xl border border-slate-200 shadow-sm">
             <p className="text-slate-500 font-medium">
-              {filtro === "pendentes" ? "Nenhuma solicitaÃ§Ã£o pendente no momento." : "Nenhum aluno ativo encontrado."}
+              {filtro === "pendentes" ? "Nenhuma solicitação pendente no momento." : "Nenhum aluno ativo encontrado."}
             </p>
             {alunos.length === 0 && (
               <p className="text-xs text-slate-400 mt-2 px-4">
