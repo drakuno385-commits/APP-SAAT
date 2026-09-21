@@ -22,7 +22,7 @@ export default function ListaAlunosTutorPage() {
     if (user) {
       const { data, error } = await supabase
         .from("alunos")
-        .select("*, profiles(nome)")
+        .select("*, profiles!alunos_user_id_fkey(nome)")
         .eq("tutor_id", user.id);
       
       if (error) {
@@ -106,7 +106,7 @@ export default function ListaAlunosTutorPage() {
             filtro === "pendentes" ? "bg-amber-500 text-white" : "bg-white border border-slate-200 text-slate-600"
           }`}
         >
-          Solicitações
+          SolicitaÃ§Ãµes
           {qtdPendentes > 0 && (
             <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full shadow-md">
               {qtdPendentes}
@@ -121,7 +121,7 @@ export default function ListaAlunosTutorPage() {
         ) : alunosFiltrados.length === 0 ? (
           <div className="text-center py-10 bg-white rounded-2xl border border-slate-200 shadow-sm">
             <p className="text-slate-500 font-medium">
-              {filtro === "pendentes" ? "Nenhuma solicitação pendente no momento." : "Nenhum aluno ativo encontrado."}
+              {filtro === "pendentes" ? "Nenhuma solicitaÃ§Ã£o pendente no momento." : "Nenhum aluno ativo encontrado."}
             </p>
             {alunos.length === 0 && (
               <p className="text-xs text-slate-400 mt-2 px-4">
@@ -135,7 +135,7 @@ export default function ListaAlunosTutorPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-bold text-slate-800 text-lg">{aluno.profiles?.nome}</h3>
-                  <p className="text-slate-500 text-sm">{aluno.turma} • RA: {aluno.ra}</p>
+                  <p className="text-slate-500 text-sm">{aluno.turma} â€¢ RA: {aluno.ra}</p>
                 </div>
                 {filtro === "ativos" && (
                   <div className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">

@@ -20,7 +20,7 @@ export default function TutorChatPage() {
         // Carrega apenas os alunos aprovados pelo tutor
         const { data } = await supabase
           .from("alunos")
-          .select("*, profiles(nome)")
+          .select("*, profiles!alunos_user_id_fkey(nome)")
           .eq("tutor_id", user.id)
           .eq("tutor_status", "aprovado");
         if (data) setAlunos(data);
@@ -56,7 +56,7 @@ export default function TutorChatPage() {
           </div>
           <div>
             <p className="text-sm font-semibold text-slate-800">{alunoAtivo.profiles?.nome}</p>
-            <p className="text-xs text-slate-400">{alunoAtivo.turma} â€¢ RA: {alunoAtivo.ra}</p>
+            <p className="text-xs text-slate-400">{alunoAtivo.turma} Ã¢â‚¬Â¢ RA: {alunoAtivo.ra}</p>
           </div>
         </header>
 
@@ -67,7 +67,7 @@ export default function TutorChatPage() {
             </span>
           </div>
           {conversa.length === 0 && (
-            <div className="text-center py-8 text-slate-400 text-sm">Nenhuma mensagem enviada. Mande um 'OlÃ¡' para {alunoAtivo.profiles?.nome}!</div>
+            <div className="text-center py-8 text-slate-400 text-sm">Nenhuma mensagem enviada. Mande um 'OlÃƒÂ¡' para {alunoAtivo.profiles?.nome}!</div>
           )}
           {conversa.map((m) => (
             <div key={m.id} className={`flex ${m.eu ? "justify-end" : "justify-start"}`}>
@@ -117,7 +117,7 @@ export default function TutorChatPage() {
           <div className="text-center py-10 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center">
             <MessageSquare size={32} className="text-slate-300 mb-3" />
             <p className="text-slate-500 font-medium">Nenhum aluno aprovado.</p>
-            <p className="text-slate-400 text-sm mt-1">VÃ¡ na aba Alunos e aprove as solicitaÃ§Ãµes.</p>
+            <p className="text-slate-400 text-sm mt-1">VÃƒÂ¡ na aba Alunos e aprove as solicitaÃƒÂ§ÃƒÂµes.</p>
           </div>
         ) : (
           alunos.map(aluno => (
