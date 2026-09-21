@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ChevronRight, Send, UserCheck, Clock, UserPlus } from "lucide-react";
@@ -6,11 +6,12 @@ import { createClient } from "@/lib/supabase/client";
 
 export default function TutorPage() {
   const [alunoId, setAlunoId] = useState<string | null>(null);
+  const [myUserId, setMyUserId] = useState("");
   const [meuTutor, setMeuTutor] = useState<any>(null);
   const [tutorStatus, setTutorStatus] = useState<"pendente" | "aprovado" | null>(null);
   const [tutoresDisponiveis, setTutoresDisponiveis] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showChat, setShowChat] = useState(false); const [myUserId, setMyUserId] = useState("");
+  const [showChat, setShowChat] = useState(false);
   const [mensagens, setMensagens] = useState<any[]>([]);
   const [novaMensagem, setNovaMensagem] = useState("");
 
@@ -24,6 +25,8 @@ export default function TutorPage() {
     const { data: { user } } = await supabase.auth.getUser();
     
     if (user) {
+      setMyUserId(user.id);
+      
       // 1. Sempre carrega a lista de tutores primeiro
       const { data: lista } = await supabase.from("profiles").select("id, nome").eq("role", "tutor");
       setTutoresDisponiveis(lista || []);
@@ -32,7 +35,7 @@ export default function TutorPage() {
       const { data: alunoInfo, error: errAluno } = await supabase.from("alunos").select("id, tutor_id, tutor_status").eq("user_id", user.id).single();
       
       if (alunoInfo) {
-        setAlunoId(alunoInfo.id); setMyUserId(user.id);
+        setAlunoId(alunoInfo.id);
         setTutorStatus(alunoInfo.tutor_status || null);
         
         if (alunoInfo.tutor_id) {
@@ -76,6 +79,8 @@ export default function TutorPage() {
     if (!novaMensagem.trim()) return;
     const msg = novaMensagem;
     setNovaMensagem("");
+    
+    // Optimistic UI
     setMensagens([...mensagens, { texto: msg, remetente_id: myUserId, id: Date.now() }]);
     
     const supabase = createClient();
@@ -85,7 +90,7 @@ export default function TutorPage() {
       texto: msg
     });
   }
-  
+
   useEffect(() => {
     if (!showChat || !meuTutor || !myUserId) return;
     async function fetchMsgs() {
@@ -100,9 +105,7 @@ export default function TutorPage() {
     fetchMsgs();
     const interval = setInterval(fetchMsgs, 3000);
     return () => clearInterval(interval);
-  }, [showChat, meuTutor, myUserId]);]);
-    setNovaMensagem("");
-  }
+  }, [showChat, meuTutor, myUserId]);
 
   if (loading) return <div className="p-8 text-center text-slate-500 font-bold">Carregando...</div>;
 
@@ -209,14 +212,16 @@ export default function TutorPage() {
               Hoje
             </span>
           </div>
-          {mensagens.map((msg, i) => (
-            <div key={i} className={`flex ${(msg.remetente_id === myUserId) ? "justify-end" : "justify-start"}`}>
-              <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${(msg.remetente_id === myUserId) ? "bg-blue-600 text-white rounded-br-sm" : "bg-white border border-slate-200 text-slate-700 rounded-bl-sm shadow-sm"}`}>
-                <p className="text-sm">{msg.texto}</p>
-                <span className={`text-[10px] block mt-1 ${(msg.remetente_id === myUserId) ? "text-blue-200 text-right" : "text-slate-400"}`}>Agora</span>
+          {mensagens.map((msg, i) => {
+            const isMine = msg.remetente_id === myUserId;
+            return (
+              <div key={msg.id || i} className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
+                <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${isMine ? "bg-blue-600 text-white rounded-br-sm" : "bg-white border border-slate-200 text-slate-700 rounded-bl-sm shadow-sm"}`}>
+                  <p className="text-sm">{msg.texto}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="p-4 bg-white border-t border-slate-100 pb-8">
