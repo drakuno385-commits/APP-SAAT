@@ -3,9 +3,15 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { createClient } from "@/lib/supabase/client";
-import { ChevronRight, Users, MapPin } from "lucide-react";
+import { ChevronRight, Users, MapPin, LogOut } from "lucide-react";
 
 export default function RelatoriosPage() {
+  async function handleLogout() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    sessionStorage.removeItem("saat_session_active");
+    window.location.href = "/login";
+  }
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const [distribuicao, setDistribuicao] = useState<any[]>([]);
