@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Send, ChevronLeft, MessageSquare } from "lucide-react";
+import { Send, ChevronLeft, LayoutDashboard, Users, MessageSquare, User } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function TutorChatPage() {
@@ -56,7 +56,7 @@ export default function TutorChatPage() {
           </div>
           <div>
             <p className="text-sm font-semibold text-slate-800">{alunoAtivo.profiles?.nome}</p>
-            <p className="text-xs text-slate-400">{alunoAtivo.turma} • RA: {alunoAtivo.ra}</p>
+            <p className="text-xs text-slate-400">{alunoAtivo.turma} â€¢ RA: {alunoAtivo.ra}</p>
           </div>
         </header>
 
@@ -67,7 +67,7 @@ export default function TutorChatPage() {
             </span>
           </div>
           {conversa.length === 0 && (
-            <div className="text-center py-8 text-slate-400 text-sm">Nenhuma mensagem enviada. Mande um 'Olá' para {alunoAtivo.profiles?.nome}!</div>
+            <div className="text-center py-8 text-slate-400 text-sm">Nenhuma mensagem enviada. Mande um 'OlÃ¡' para {alunoAtivo.profiles?.nome}!</div>
           )}
           {conversa.map((m) => (
             <div key={m.id} className={`flex ${m.eu ? "justify-end" : "justify-start"}`}>
@@ -117,7 +117,7 @@ export default function TutorChatPage() {
           <div className="text-center py-10 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center">
             <MessageSquare size={32} className="text-slate-300 mb-3" />
             <p className="text-slate-500 font-medium">Nenhum aluno aprovado.</p>
-            <p className="text-slate-400 text-sm mt-1">Vá na aba Alunos e aprove as solicitações.</p>
+            <p className="text-slate-400 text-sm mt-1">VÃ¡ na aba Alunos e aprove as solicitaÃ§Ãµes.</p>
           </div>
         ) : (
           alunos.map(aluno => (

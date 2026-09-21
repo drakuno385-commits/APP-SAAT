@@ -1,7 +1,7 @@
-﻿"use client";
+"use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Users, AlertCircle, MessageSquare, Search, ArrowRight, UserCheck } from "lucide-react";
+import { AlertCircle, Search, ArrowRight, UserCheck, LayoutDashboard, Users, MessageSquare, User } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function TutorDashboardPage() {

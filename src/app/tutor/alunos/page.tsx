@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ChevronLeft, Search, CheckCircle, XCircle } from "lucide-react";
+import { ChevronLeft, Search, CheckCircle, XCircle, LayoutDashboard, Users, MessageSquare, User } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function ListaAlunosTutorPage() {
@@ -89,7 +89,7 @@ export default function ListaAlunosTutorPage() {
             filtro === "pendentes" ? "bg-amber-500 text-white" : "bg-white border border-slate-200 text-slate-600"
           }`}
         >
-          Sãolicitações
+          SÃ£olicitaÃ§Ãµes
           {qtdPendentes > 0 && (
             <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full shadow-md">
               {qtdPendentes}
@@ -104,7 +104,7 @@ export default function ListaAlunosTutorPage() {
         ) : alunosFiltrados.length === 0 ? (
           <div className="text-center py-10 bg-white rounded-2xl border border-slate-200 shadow-sm">
             <p className="text-slate-500">
-              {filtro === "pendentes" ? "Nenhuma solicitação pendente no momento." : "Nenhum aluno ativo encontrado."}
+              {filtro === "pendentes" ? "Nenhuma solicitaÃ§Ã£o pendente no momento." : "Nenhum aluno ativo encontrado."}
             </p>
           </div>
         ) : (
@@ -113,7 +113,7 @@ export default function ListaAlunosTutorPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-bold text-slate-800 text-lg">{aluno.profiles?.nome}</h3>
-                  <p className="text-slate-500 text-sm">{aluno.turma} • RA: {aluno.ra}</p>
+                  <p className="text-slate-500 text-sm">{aluno.turma} â€¢ RA: {aluno.ra}</p>
                 </div>
                 {filtro === "ativos" && (
                   <div className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">
