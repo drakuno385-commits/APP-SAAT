@@ -1,4 +1,4 @@
-import { createServerClient } from "@supabase/ssr";
+﻿import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 const PUBLIC_ROUTES = ["/login", "/cadastro"];
@@ -31,6 +31,11 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
   const pathname = request.nextUrl.pathname;
+  
+  if (pathname.startsWith("/api")) {
+    return supabaseResponse;
+  }
+
   const isPublic = PUBLIC_ROUTES.some((r) => pathname.startsWith(r));
 
   if (!user && !isPublic && pathname !== "/") {
@@ -38,7 +43,6 @@ export async function middleware(request: NextRequest) {
   }
 
   if (user) {
-    // Busca o role direto do metadata do usuário (MUITO mais rápido e a prova de falhas)
     const role = user.user_metadata?.role || "aluno";
     const dest = ROLE_ROUTES[role] || "/aluno/dashboard";
 
