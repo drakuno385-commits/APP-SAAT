@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { MapPin, Loader2, CheckCircle, SlidersHorizontal, ChevronRight } from "lucide-react";
@@ -31,8 +31,8 @@ export default function EscolaCadastroPage() {
         setForm({
           nome: data.nome || "",
           endereco: data.endereco || "",
-          horarioEntrada: data.horario_entrada || "14:15",
-          horarioSaida: data.horario_saida || "21:15",
+          horarioEntrada: (data.horario_entrada ? data.horario_entrada.substring(0,5) : "14:15"),
+          horarioSaida: (data.horario_saida ? data.horario_saida.substring(0,5) : "21:15"),
           raio: data.raio_metros || 100,
         });
         if (data.lat && data.lng) {
