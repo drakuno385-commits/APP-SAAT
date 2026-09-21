@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 
 export default function PerfilGestorPage() {
   const [nome, setNome] = useState("Gestor");
+  const [escolaNome, setEscolaNome] = useState("Carregando escola...");
 
   useEffect(() => {
     async function load() {
@@ -14,6 +15,14 @@ export default function PerfilGestorPage() {
       if (user) {
         const { data } = await supabase.from("profiles").select("nome").eq("id", user.id).single();
         if(data) setNome(data.nome);
+
+        // Pega a primeira escola cadastrada no sistema
+        const { data: escola } = await supabase.from("escolas").select("nome").limit(1).single();
+        if (escola) {
+          setEscolaNome(escola.nome);
+        } else {
+          setEscolaNome("Nenhuma escola cadastrada");
+        }
       }
     }
     load();
@@ -39,7 +48,7 @@ export default function PerfilGestorPage() {
           </div>
           <div className="text-center">
             <p className="font-bold text-slate-800 text-lg">{nome}</p>
-            <p className="text-slate-500 text-sm">Gestor(a) • EE Prof. Eurípedes</p>
+            <p className="text-slate-500 text-sm">Gestor(a) • {escolaNome}</p>
           </div>
         </div>
 
