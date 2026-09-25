@@ -11,8 +11,8 @@ const MapaEscola = dynamic(() => import("@/components/gestor/MapaEscola").then(m
 export default function EscolaCadastroPage() {
   const [escolaId, setEscolaId] = useState<string | null>(null);
   const [form, setForm] = useState({
-    nome: "",
-    endereco: "",
+    nome: "EE Professor Eurípedes Simões de Paula",
+    endereco: "R. Maria Pape, 30 - Jardim Lucélia",
     horarioEntrada: "14:15",
     horarioSaida: "21:15",
     raio: 100,
@@ -31,14 +31,14 @@ export default function EscolaCadastroPage() {
         if (data) {
           setEscolaId(data.id);
           setForm({
-            nome: data.nome || "",
-            endereco: data.endereco || "",
+            nome: data.nome || "EE Professor Eurípedes Simões de Paula",
+            endereco: data.endereco || "R. Maria Pape, 30 - Jardim Lucélia",
             horarioEntrada: (data.horario_entrada ? String(data.horario_entrada).substring(0,5) : "14:15"),
             horarioSaida: (data.horario_saida ? String(data.horario_saida).substring(0,5) : "21:15"),
             raio: Number(data.raio_metros) || 100,
           });
           if (data.lat && data.lng) {
-            setCoords({ lat: Number(data.lat), lng: Number(data.lng) });
+            setCoords({ lat: -23.7712, lng: -46.6865 });
           }
         }
       } catch (err: any) {
