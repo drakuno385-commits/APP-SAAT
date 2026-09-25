@@ -122,7 +122,9 @@ export default function FaltasPage() {
                       <td className="px-4 py-3.5 text-sm text-slate-700 font-medium">{materia}</td>
                       <td className="px-4 py-3.5 text-right">
                         <span
-                          className={	ext-sm font-bold \}
+                          className={`text-sm font-bold ${
+                            qtd >= 2 ? "text-red-600" : qtd === 1 ? "text-yellow-600" : "text-slate-400"
+                          }`}
                         >
                           {qtd}
                         </span>
@@ -136,7 +138,13 @@ export default function FaltasPage() {
               <div className="border-t border-slate-100 px-4 py-3 flex items-center justify-between bg-slate-50">
                 <span className="text-sm font-bold text-slate-700">Total: {total} faltas</span>
                 <span
-                  className={	ext-xs font-semibold px-2.5 py-1 rounded-full \}
+                  className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
+                    total >= limiteAlerta
+                      ? "bg-red-100 text-red-700"
+                      : total >= 2
+                      ? "bg-yellow-100 text-yellow-700"
+                      : "bg-green-100 text-green-700"
+                  }`}
                 >
                   {total >= limiteAlerta ? " Alto" : total >= 2 ? " Atenção" : " Normal"}
                 </span>
@@ -167,7 +175,9 @@ export default function FaltasPage() {
                           {new Date(f.data).toLocaleDateString("pt-BR", {timeZone: 'UTC'})}
                         </p>
                       </div>
-                      <span className={	ext-[10px] font-bold px-2 py-0.5 rounded-full uppercase \}>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${
+                        f.justificativa ? "bg-blue-100 text-blue-700" : "bg-red-100 text-red-600"
+                      }`}>
                         {f.justificativa ? "Sinalizada/Justificada" : "Não justificada"}
                       </span>
                     </div>
@@ -248,7 +258,9 @@ export default function FaltasPage() {
             <Link
               key={item.href}
               href={item.href}
-              className={lex-1 flex flex-col items-center gap-1 py-3 text-xs \}
+              className={`flex-1 flex flex-col items-center gap-1 py-3 text-xs ${
+                item.href === "/aluno/faltas" ? "text-blue-600" : "text-slate-400"
+              }`}
             >
               <span className="text-lg">{item.icon}</span>
               <span className="font-medium">{item.label}</span>
