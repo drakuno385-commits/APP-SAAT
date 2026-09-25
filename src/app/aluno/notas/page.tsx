@@ -106,7 +106,7 @@ export default function NotasPage() {
           if (n.b4 !== "") { soma += Number(n.b4); qtd++; }
           
           if (qtd > 0) {
-            somaMedias += (soma / qtd);
+            somaMedias += soma;
             qtdMaterias++;
           }
         }
@@ -141,11 +141,11 @@ export default function NotasPage() {
     if (n.b3 !== "") { soma += Number(n.b3); qtd++; }
     if (n.b4 !== "") { soma += Number(n.b4); qtd++; }
     if (qtd > 0) {
-      somaTotalMedias += (soma / qtd);
+      somaTotalMedias += soma;
       materiatotal++;
     }
   });
-  const mediaGeral = materiatotal > 0 ? (somaTotalMedias / materiatotal).toFixed(1) : "0.0";
+  const mediaGeral = somaTotalMedias.toFixed(1);
 
   return (
     <div className="app-shell min-h-screen bg-slate-50">
@@ -159,8 +159,8 @@ export default function NotasPage() {
       <div className="p-4 flex flex-col gap-4 pb-20">
         <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-6 text-white shadow-md flex items-center justify-between">
           <div>
-            <p className="text-blue-100 text-sm font-medium">Média Geral</p>
-            <h2 className="text-4xl font-black mt-1">{mediaGeral}</h2>
+            <p className="text-blue-100 text-sm font-medium">Pontuação Total</p>
+            <h2 className="text-4xl font-black mt-1">{mediaGeral} <span className="text-sm font-medium text-blue-200">pts</span></h2>
           </div>
           <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
             <Calculator size={32} className="text-white" />
@@ -179,7 +179,7 @@ export default function NotasPage() {
               if (nota.b3 !== "") { soma += Number(nota.b3); qtd++; }
               if (nota.b4 !== "") { soma += Number(nota.b4); qtd++; }
               
-              const media = qtd > 0 ? (soma / qtd) : 0;
+              const media = soma;
               const situacao = getSituacao(media, qtd);
 
               return (
