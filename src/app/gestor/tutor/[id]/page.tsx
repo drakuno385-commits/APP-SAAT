@@ -21,7 +21,7 @@ function AlunoCard({ aluno }: { aluno: any }) {
         <p className="text-[10px] text-slate-400">{aluno.turma} • RA: {aluno.ra}</p>
         <div className="flex gap-2 mt-1 text-[10px] text-slate-500">
           <span>Faltas: <b>{aluno.faltasCount}</b></span>
-          <span>Média: <b>{aluno.mediaCalc}</b></span>
+          <span>Total: <b>{aluno.mediaCalc}</b></span>
         </div>
       </div>
       <span className="text-[10px] font-bold px-2 py-1 rounded-md flex-shrink-0"

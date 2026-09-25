@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ChevronLeft, AlertTriangle, BookOpen, User, TrendingUp } from "lucide-react";
@@ -68,7 +68,7 @@ export default function DetalhesAlunoTutorPage({ params }: { params: { id: strin
             <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-2">
               <TrendingUp size={20} />
             </div>
-            <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider">Média Geral</p>
+            <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider">Pontuação Total</p>
             <p className="text-2xl font-black text-slate-800">{aluno.media ? Number(aluno.media).toFixed(1) : "-"}</p>
           </div>
         </div>
